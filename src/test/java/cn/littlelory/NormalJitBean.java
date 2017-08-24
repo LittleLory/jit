@@ -10,7 +10,7 @@ public class NormalJitBean {
     @JitField(sort = 1)
     private int f1;
     @JitField(sort = 2)
-    private int f2;
+    private long f2;
 
     public String getKey() {
         return key;
@@ -28,11 +28,11 @@ public class NormalJitBean {
         this.f1 = f1;
     }
 
-    public int getF2() {
+    public long getF2() {
         return f2;
     }
 
-    public void setF2(int f2) {
+    public void setF2(long f2) {
         this.f2 = f2;
     }
 

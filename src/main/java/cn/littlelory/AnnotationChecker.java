@@ -30,7 +30,7 @@ class AnnotationChecker {
     }
 
     void assertHaveBeanAnnotation(Class<?> clz) {
-        if (!reflectUtil.hasAnnotation(clz, JitBean.class))
+        if (!reflectUtil.hasTypeAnnotation(clz, JitBean.class))
             throw new NoBeanAnntationFoundException("not found the annotation[" + JitBean.class + "] from the Class[" + clz + "].");
     }
 

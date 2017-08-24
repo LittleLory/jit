@@ -22,7 +22,7 @@ public class AnnotationCheckerTest {
 
     @Test(expected = NoBeanAnntationFoundException.class)
     public void have_no_bean_annotation() {
-        EasyMock.expect(reflectUtil.hasAnnotation(NormalJitBean.class, JitBean.class)).andReturn(false);
+        EasyMock.expect(reflectUtil.hasTypeAnnotation(NormalJitBean.class, JitBean.class)).andReturn(false);
         checker.setReflectUtil(reflectUtil);
         EasyMock.replay(reflectUtil);
 
@@ -31,7 +31,7 @@ public class AnnotationCheckerTest {
 
     @Test
     public void have_bean_annotation() {
-        EasyMock.expect(reflectUtil.hasAnnotation(NormalJitBean.class, JitBean.class)).andReturn(true);
+        EasyMock.expect(reflectUtil.hasTypeAnnotation(NormalJitBean.class, JitBean.class)).andReturn(true);
         checker.setReflectUtil(reflectUtil);
         EasyMock.replay(reflectUtil);
 

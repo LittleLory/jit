@@ -20,6 +20,14 @@ class ReflectUtil {
     private ReflectUtil() {
     }
 
+    Field getFieldByAnnotation(Class<?> clz, Class<? extends Annotation> targetAnnotation) {
+        List<Field> fields = getFieldsByAnnotation(clz, targetAnnotation);
+        if (fields.size() > 1)
+            throw new MultiFieldException("there are multiple fields associated by annotation["+targetAnnotation+"].");
+
+        return fields.get(0);
+    }
+
     List<Field> getFieldsByAnnotation(Class<?> clz, Class<? extends Annotation> targetAnnotation) {
         Field[] allFields = clz.getDeclaredFields();
 
@@ -28,9 +36,11 @@ class ReflectUtil {
                 .collect(Collectors.toList());
     }
 
-    boolean hasAnnotation(Class<?> clz, Class<? extends Annotation> targetAnnotation) {
-        return getFieldsByAnnotation(clz, targetAnnotation) != null;
+    boolean hasTypeAnnotation(Class<?> clz, Class<? extends Annotation> targetAnnotation) {
+        return getTypeAnnotation(clz, targetAnnotation) != null;
     }
+
+
 
     <T extends Annotation> T getTypeAnnotation(Class<?> clz, Class<T> targetAnnotation) {
         return clz.getDeclaredAnnotation(targetAnnotation);

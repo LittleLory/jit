@@ -32,11 +32,18 @@ public class ReflectUtilTest {
 
     @Test
     public void class_have_target_annotation() {
-        assertTrue(reflectUtil.hasAnnotation(NormalJitBean.class, JitBean.class));
+        assertTrue(reflectUtil.hasTypeAnnotation(NormalJitBean.class, JitBean.class));
     }
 
     @Test
     public void class_has_no_target_annotation() {
-        assertFalse(reflectUtil.hasAnnotation(NormalJitBean.class, Test.class));
+        assertFalse(reflectUtil.hasTypeAnnotation(NormalJitBean.class, Test.class));
+    }
+
+    @Test
+    public void get_type_annotation() {
+        JitBean bean = reflectUtil.getTypeAnnotation(NormalJitBean.class, JitBean.class);
+        assertNotNull(bean);
+        assertEquals("NormalJitBean", bean.name());
     }
 }
