@@ -328,6 +328,8 @@ public class SerializerTest {
 
     private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
 
+
+
     public String printHexBinary(byte[] data) {
         StringBuilder r = new StringBuilder(data.length * 2);
         for (byte b : data) {
@@ -337,6 +339,11 @@ public class SerializerTest {
             r.append(",");
         }
         return r.toString();
+    }
+
+    @Test
+    public void test() {
+        System.out.println(printHexBinary("file3".getBytes()));
     }
 
     private void assertBytesEquals(byte[] expect, byte[] actual) {
