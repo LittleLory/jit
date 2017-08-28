@@ -19,7 +19,7 @@ class Fingerprint {
         }
     }
 
-    public static String generate(byte[] bytes) {
+    static String generate(byte[] bytes) {
         Objects.requireNonNull(bytes);
 
         try {

@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 
+import static cn.littlelory.TestUtil.assertBytesEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -170,30 +171,5 @@ public class BeanSerializerTest {
         assertEquals("abc", bean.getKey());
         assertEquals(1024, bean.getF1());
         assertEquals(2048, bean.getF2());
-    }
-
-    private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
-
-
-
-    public String printHexBinary(byte[] data) {
-        StringBuilder r = new StringBuilder(data.length * 2);
-        for (byte b : data) {
-            r.append("0x");
-            r.append(hexCode[(b >> 4) & 0xF]);
-            r.append(hexCode[(b & 0xF)]);
-            r.append(",");
-        }
-        return r.toString();
-    }
-
-    @Test
-    public void test() {
-        System.out.println(printHexBinary("file3".getBytes()));
-    }
-
-    private void assertBytesEquals(byte[] expect, byte[] actual) {
-        for (int i = 0; i < expect.length; i++)
-            assertEquals(expect[i], actual[i]);
     }
 }

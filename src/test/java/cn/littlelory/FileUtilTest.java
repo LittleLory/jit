@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static cn.littlelory.TestUtil.assertBytesEquals;
 import static org.junit.Assert.*;
 
 /**
@@ -97,8 +98,4 @@ public class FileUtilTest {
         return this.getClass().getResource("/").getPath();
     }
 
-    private void assertBytesEquals(byte[] expect, byte[] actual) {
-        for (int i = 0; i < expect.length; i++)
-            assertEquals(expect[i], actual[i]);
-    }
 }
