@@ -23,18 +23,18 @@ class BeanSerializer {
         Class clz = t.getClass();
         JitBean jitBean = ReflectUtil.getTypeAnnotation(clz, JitBean.class);
         byte[] beanName = SerializeUtil.encodeStr(jitBean.name());
-        fillBuffer(buffer, beanName);
+        ByteBufferUtil.fillBuffer(buffer, beanName);
 
         Field keyField = ReflectUtil.getFieldByAnnotation(clz, JitKey.class);
         byte[] key = encodeField(t, keyField);
-        fillBuffer(buffer, key);
+        ByteBufferUtil.fillBuffer(buffer, key);
 
         List<Field> fields = ReflectUtil.getFieldsByAnnotation(clz, JitField.class);
         orderByJitFieldSortValue(fields);
 
         buffer.put(SerializeUtil.encodeInt(fields.size()));
 
-        fields.forEach(field -> fillBuffer(buffer, encodeField(t, field)));
+        fields.forEach(field -> ByteBufferUtil.fillBuffer(buffer, encodeField(t, field)));
 
         int position = buffer.position();
         buffer.rewind();
@@ -49,7 +49,7 @@ class BeanSerializer {
         //todo version compatible
         int serializeVersion = buffer.getInt();
 
-        byte[] beanNameBytes = getBuffer(buffer);
+        byte[] beanNameBytes = ByteBufferUtil.getBuffer(buffer);
         String beanName = SerializeUtil.decodeStr(beanNameBytes);
 
         JitBean jitBean = ReflectUtil.getTypeAnnotation(clz, JitBean.class);
@@ -67,7 +67,7 @@ class BeanSerializer {
         }
 
         try {
-            byte[] keyBytes = getBuffer(buffer);
+            byte[] keyBytes = ByteBufferUtil.getBuffer(buffer);
             String key = SerializeUtil.decodeStr(keyBytes);
             Field keyField = ReflectUtil.getFieldByAnnotation(clz, JitKey.class);
             accessField(keyField);
@@ -80,7 +80,7 @@ class BeanSerializer {
 
             for (int i = 0; i < fields.size(); i++) {
                 Field field = fields.get(i);
-                byte[] valueBytes = getBuffer(buffer);
+                byte[] valueBytes = ByteBufferUtil.getBuffer(buffer);
                 Object value = decodeField(field, valueBytes);
                 accessField(field);
                 field.set(entity, value);
@@ -91,19 +91,6 @@ class BeanSerializer {
         }
 
         return entity;
-    }
-
-    private void fillBuffer(ByteBuffer buffer, byte[] bytes) {
-        int size = bytes.length;
-        buffer.put(SerializeUtil.encodeInt(size));
-        buffer.put(bytes);
-    }
-
-    private byte[] getBuffer(ByteBuffer buffer) {
-        int size = buffer.getInt();
-        byte[] bytes = new byte[size];
-        buffer.get(bytes);
-        return bytes;
     }
 
     private static final int byteLen = 8;
