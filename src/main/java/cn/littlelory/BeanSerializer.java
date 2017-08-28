@@ -2,34 +2,34 @@ package cn.littlelory;
 
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.List;
 
 /**
  * Created by littlelory on 2017/8/23.
  */
-class Serializer {
-    private static final Serializer INSTANCE = new Serializer();
+class BeanSerializer {
+    private static final BeanSerializer INSTANCE = new BeanSerializer();
     static final int SERIALIZE_VERSION = 1;
 
     private ReflectUtil reflectUtil = ReflectUtil.getINSTANCE();
+    private SerializeUtil serializeUtil = SerializeUtil.getINSTANCE();
 
     public void setReflectUtil(ReflectUtil reflectUtil) {
         this.reflectUtil = reflectUtil;
     }
 
-    public static Serializer getInstance() {
-        return Serializer.INSTANCE;
+    public static BeanSerializer getInstance() {
+        return BeanSerializer.INSTANCE;
     }
 
     <T> byte[] encode(T t) {
         ByteBuffer buffer = ByteBuffer.allocate(2048);
 
-        buffer.put(encodeInt(SERIALIZE_VERSION));
+        buffer.put(serializeUtil.encodeInt(SERIALIZE_VERSION));
 
         Class clz = t.getClass();
         JitBean jitBean = reflectUtil.getTypeAnnotation(clz, JitBean.class);
-        byte[] beanName = encodeStr(jitBean.name());
+        byte[] beanName = serializeUtil.encodeStr(jitBean.name());
         fillBuffer(buffer, beanName);
 
         Field keyField = reflectUtil.getFieldByAnnotation(clz, JitKey.class);
@@ -39,7 +39,7 @@ class Serializer {
         List<Field> fields = reflectUtil.getFieldsByAnnotation(clz, JitField.class);
         orderByJitFieldSortValue(fields);
 
-        buffer.put(encodeInt(fields.size()));
+        buffer.put(serializeUtil.encodeInt(fields.size()));
 
         fields.forEach(field -> fillBuffer(buffer, encodeField(t, field)));
 
@@ -57,7 +57,7 @@ class Serializer {
         int serializeVersion = buffer.getInt();
 
         byte[] beanNameBytes = getBuffer(buffer);
-        String beanName = decodeStr(beanNameBytes);
+        String beanName = serializeUtil.decodeStr(beanNameBytes);
 
         JitBean jitBean = reflectUtil.getTypeAnnotation(clz, JitBean.class);
         String actualName = jitBean.name();
@@ -75,7 +75,7 @@ class Serializer {
 
         try {
             byte[] keyBytes = getBuffer(buffer);
-            String key = decodeStr(keyBytes);
+            String key = serializeUtil.decodeStr(keyBytes);
             Field keyField = reflectUtil.getFieldByAnnotation(clz, JitKey.class);
             accessField(keyField);
             keyField.set(entity, key);
@@ -102,7 +102,7 @@ class Serializer {
 
     private void fillBuffer(ByteBuffer buffer, byte[] bytes) {
         int size = bytes.length;
-        buffer.put(encodeInt(size));
+        buffer.put(serializeUtil.encodeInt(size));
         buffer.put(bytes);
     }
 
@@ -120,11 +120,11 @@ class Serializer {
             accessField(field);
             Class type = field.getType();
             if (type == Integer.TYPE || type == Integer.class)
-                return encodeInt(field.getInt(obj));
+                return serializeUtil.encodeInt(field.getInt(obj));
             else if (type == Long.TYPE || type == Long.class)
-                return encodeLong(field.getLong(obj));
+                return serializeUtil.encodeLong(field.getLong(obj));
             else if (type == String.class)
-                return encodeStr((String) field.get(obj));
+                return serializeUtil.encodeStr((String) field.get(obj));
             else
                 throw new TypeNotSupportException("not support field type[" + type + "] now.");
         } catch (IllegalAccessException e) {
@@ -135,58 +135,16 @@ class Serializer {
     Object decodeField(Field field, byte[] bytes) {
         Class type = field.getType();
         if (type == Integer.TYPE || type == Integer.class)
-            return decodeInt(bytes);
+            return serializeUtil.decodeInt(bytes);
         else if (type == Long.TYPE || type == Long.class)
-            return decodeLong(bytes);
+            return serializeUtil.decodeLong(bytes);
         else if (type == String.class)
-            return decodeStr(bytes);
+            return serializeUtil.decodeStr(bytes);
         else
             throw new TypeNotSupportException("not support field type[" + type + "] now.");
     }
 
-    private static final int INT_LEN = 4;
-    byte[] encodeInt(Integer value) {
-        byte[] result = new byte[INT_LEN];
-        for (int i = 0; i < INT_LEN; i++)
-            result[i] = (byte) ((value >> (INT_LEN - i - 1) * byteLen) & 0xff);
-        return result;
-    }
 
-    int decodeInt(byte[] bytes) {
-        int result = 0;
-        for (int i = 0; i < bytes.length; i++) {
-            result <<= byteLen;
-            result |= (bytes[i]&0x0ff);
-        }
-        return result;
-    }
-
-    private static final int LONG_LEN = 8;
-    byte[] encodeLong(Long value) {
-        byte[] result = new byte[LONG_LEN];
-        for (int i = 0; i < LONG_LEN; i++)
-            result[i] = (byte) ((value >> (LONG_LEN - i - 1) * byteLen) & 0xff);
-        return result;
-    }
-
-    long decodeLong(byte[] bytes) {
-        long result = 0L;
-        for (int i = 0; i < bytes.length; i++) {
-            result <<= byteLen;
-            result |= bytes[i]&0x0ff;
-        }
-        return result;
-    }
-
-    byte[] encodeStr(String value) {
-        if (value == null || value.length() == 0)
-            return new byte[0];
-        return value.getBytes(charset());
-    }
-
-    String decodeStr(byte[] bytes) {
-        return new String(bytes, charset());
-    }
 
     private void accessField(Field field) {
         field.setAccessible(true);
@@ -200,7 +158,4 @@ class Serializer {
         });
     }
 
-    private Charset charset() {
-        return Charset.forName("utf8");
-    }
 }

@@ -3,169 +3,15 @@ package cn.littlelory;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by littlelory on 2017/8/24.
  */
-public class SerializerTest {
-    private Serializer serializer = Serializer.getInstance();
-
-    @Test
-    public void encode_positive_int_value() {
-        int value = Integer.MAX_VALUE;
-
-        byte[] expect = new byte[4];
-        expect[3] = (byte) 0xff;
-        expect[2] = (byte) 0xff;
-        expect[1] = (byte) 0xff;
-        expect[0] = (byte) 0x7f;
-
-        byte[] actual = serializer.encodeInt(value);
-
-        assertEquals(expect.length, actual.length);
-        assertBytesEquals(expect, actual);
-    }
-
-    @Test
-    public void encode_negative_int_value() {
-        int value = Integer.MIN_VALUE;
-
-        byte[] expect = new byte[4];
-        expect[3] = (byte) 0x00;
-        expect[2] = (byte) 0x00;
-        expect[1] = (byte) 0x00;
-        expect[0] = (byte) 0x80;
-
-        byte[] actual = serializer.encodeInt(value);
-
-        assertEquals(expect.length, actual.length);
-        assertBytesEquals(expect, actual);
-    }
-
-    @Test
-    public void decode_positive_int_value() {
-        byte[] bytes = new byte[4];
-        bytes[3] = (byte) 0xff;
-        bytes[2] = (byte) 0xff;
-        bytes[1] = (byte) 0xff;
-        bytes[0] = (byte) 0x7f;
-
-        assertEquals(Integer.MAX_VALUE, serializer.decodeInt(bytes));
-    }
-
-    @Test
-    public void decode_negative_int_value() {
-        byte[] bytes = new byte[4];
-        bytes[3] = (byte) 0x00;
-        bytes[2] = (byte) 0x00;
-        bytes[1] = (byte) 0x00;
-        bytes[0] = (byte) 0x80;
-
-        assertEquals(Integer.MIN_VALUE, serializer.decodeInt(bytes));
-    }
-
-    @Test
-    public void encode_positive_long_value() {
-        long value = Long.MAX_VALUE;
-
-        byte[] expect = new byte[8];
-        expect[7] = (byte) 0xff;
-        expect[6] = (byte) 0xff;
-        expect[5] = (byte) 0xff;
-        expect[4] = (byte) 0xff;
-        expect[3] = (byte) 0xff;
-        expect[2] = (byte) 0xff;
-        expect[1] = (byte) 0xff;
-        expect[0] = (byte) 0x7f;
-
-        byte[] actual = serializer.encodeLong(value);
-
-        assertEquals(expect.length, actual.length);
-        assertBytesEquals(expect, actual);
-    }
-
-    @Test
-    public void encode_negative_long_value() {
-        long value = Long.MIN_VALUE;
-
-        byte[] expect = new byte[8];
-        expect[7] = (byte) 0x00;
-        expect[6] = (byte) 0x00;
-        expect[5] = (byte) 0x00;
-        expect[4] = (byte) 0x00;
-        expect[3] = (byte) 0x00;
-        expect[2] = (byte) 0x00;
-        expect[1] = (byte) 0x00;
-        expect[0] = (byte) 0x80;
-
-        byte[] actual = serializer.encodeLong(value);
-
-        assertEquals(expect.length, actual.length);
-        assertBytesEquals(expect, actual);
-    }
-
-    @Test
-    public void decode_positive_long_value() {
-        byte[] bytes = new byte[8];
-        bytes[7] = (byte) 0xff;
-        bytes[6] = (byte) 0xff;
-        bytes[5] = (byte) 0xff;
-        bytes[4] = (byte) 0xff;
-        bytes[3] = (byte) 0xff;
-        bytes[2] = (byte) 0xff;
-        bytes[1] = (byte) 0xff;
-        bytes[0] = (byte) 0x7f;
-
-        assertEquals(Long.MAX_VALUE, serializer.decodeLong(bytes));
-    }
-
-    @Test
-    public void decode_negative_long_value() {
-        byte[] bytes = new byte[8];
-        bytes[7] = (byte) 0x00;
-        bytes[6] = (byte) 0x00;
-        bytes[5] = (byte) 0x00;
-        bytes[4] = (byte) 0x00;
-        bytes[3] = (byte) 0x00;
-        bytes[2] = (byte) 0x00;
-        bytes[1] = (byte) 0x00;
-        bytes[0] = (byte) 0x80;
-
-        assertEquals(Long.MIN_VALUE, serializer.decodeLong(bytes));
-    }
-
-    @Test
-    public void encode_str() {
-        String value = "abc";
-
-        byte[] expect = new byte[3];
-        expect[0] = 'a';
-        expect[1] = 'b';
-        expect[2] = 'c';
-
-        byte[] actual = serializer.encodeStr(value);
-
-        assertEquals(expect.length, actual.length);
-        assertBytesEquals(expect, actual);
-    }
-
-    @Test
-    public void encode_null_str() {
-        String value = null;
-        byte[] actual = serializer.encodeStr(value);
-        assertEquals(0, actual.length);
-    }
-
-    @Test
-    public void encode_blank_str() {
-        String value = "";
-        byte[] actual = serializer.encodeStr(value);
-        assertEquals(0, actual.length);
-    }
-
+public class BeanSerializerTest {
+    private BeanSerializer beanSerializer = BeanSerializer.getInstance();
 
     @Test
     public void encode_int_field() throws NoSuchFieldException {
@@ -175,7 +21,7 @@ public class SerializerTest {
         Class clz = NormalJitBean.class;
         Field field = clz.getDeclaredField("f1");
 
-        byte[] actual = serializer.encodeField(bean, field);
+        byte[] actual = beanSerializer.encodeField(bean, field);
 
         byte[] expect = new byte[4];
         expect[3] = (byte) 0xff;
@@ -194,7 +40,7 @@ public class SerializerTest {
         Class clz = NormalJitBean.class;
         Field field = clz.getDeclaredField("f2");
 
-        byte[] actual = serializer.encodeField(bean, field);
+        byte[] actual = beanSerializer.encodeField(bean, field);
 
         byte[] expect = new byte[8];
         expect[7] = (byte) 0xff;
@@ -217,7 +63,7 @@ public class SerializerTest {
         Class clz = NormalJitBean.class;
         Field field = clz.getDeclaredField("key");
 
-        byte[] actual = serializer.encodeField(bean, field);
+        byte[] actual = beanSerializer.encodeField(bean, field);
 
         byte[] expect = new byte[3];
         expect[0] = 'a';
@@ -238,7 +84,7 @@ public class SerializerTest {
         bytes[1] = (byte) 0xff;
         bytes[0] = (byte) 0x7f;
 
-        Object result = serializer.decodeField(field, bytes);
+        Object result = beanSerializer.decodeField(field, bytes);
         assertEquals(Integer.class, result.getClass());
         assertEquals(Integer.MAX_VALUE, result);
     }
@@ -258,7 +104,7 @@ public class SerializerTest {
         bytes[1] = (byte) 0xff;
         bytes[0] = (byte) 0x7f;
 
-        Object result = serializer.decodeField(field, bytes);
+        Object result = beanSerializer.decodeField(field, bytes);
         assertEquals(Long.class, result.getClass());
         assertEquals(Long.MAX_VALUE, result);
     }
@@ -273,7 +119,7 @@ public class SerializerTest {
         bytes[1] = 'b';
         bytes[2] = 'c';
 
-        Object result = serializer.decodeField(field, bytes);
+        Object result = beanSerializer.decodeField(field, bytes);
         assertEquals(String.class, result.getClass());
         assertEquals("abc", result);
     }
@@ -298,7 +144,7 @@ public class SerializerTest {
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x8, 0x0//f2 value
         };
 
-        byte[] actual = serializer.encode(bean);
+        byte[] actual = beanSerializer.encode(bean);
 
         assertBytesEquals(expect, actual);
     }
@@ -319,7 +165,7 @@ public class SerializerTest {
         };
 
         Class<NormalJitBean> clz = NormalJitBean.class;
-        NormalJitBean bean = serializer.decode(clz, bytes);
+        NormalJitBean bean = beanSerializer.decode(clz, bytes);
         assertNotNull(bean);
         assertEquals("abc", bean.getKey());
         assertEquals(1024, bean.getF1());
