@@ -16,12 +16,6 @@ class AnnotationChecker {
         return INSTANCE;
     }
 
-    private ReflectUtil reflectUtil = ReflectUtil.getINSTANCE();
-
-    public void setReflectUtil(ReflectUtil reflectUtil) {
-        this.reflectUtil = reflectUtil;
-    }
-
     <T> void check(T t) {
         Class clz = t.getClass();
         assertHaveBeanAnnotation(clz);
@@ -30,12 +24,12 @@ class AnnotationChecker {
     }
 
     void assertHaveBeanAnnotation(Class<?> clz) {
-        if (!reflectUtil.hasTypeAnnotation(clz, JitBean.class))
+        if (!ReflectUtil.hasTypeAnnotation(clz, JitBean.class))
             throw new NoBeanAnntationFoundException("not found the annotation[" + JitBean.class + "] from the Class[" + clz + "].");
     }
 
     void assertKeyAnnotationLegal(Class<?> clz) {
-        List<Field> fields = reflectUtil.getFieldsByAnnotation(clz, JitKey.class);
+        List<Field> fields = ReflectUtil.getFieldsByAnnotation(clz, JitKey.class);
         if (fields.size() == 0)
             throw new NoKeyFoundException("not found the field associated with JitKey in the Class[" + clz + "].");
 
@@ -44,7 +38,7 @@ class AnnotationChecker {
     }
 
     void assertFieldAnnotationLegal(Class<?> clz) {
-        List<Field> fields = reflectUtil.getFieldsByAnnotation(clz, JitField.class);
+        List<Field> fields = ReflectUtil.getFieldsByAnnotation(clz, JitField.class);
         Map<Integer, Long> sortCountMap = fields.stream().map(field -> field.getDeclaredAnnotation(JitField.class)).filter(Objects::nonNull).collect(Collectors.groupingBy(JitField::sort, Collectors.counting()));
         List<Long> multiSorts = sortCountMap.entrySet().stream().filter(entry -> entry.getValue() > 1).map(Map.Entry::getValue).collect(Collectors.toList());
         if (multiSorts.size() > 0)

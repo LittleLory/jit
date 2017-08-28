@@ -11,13 +11,6 @@ class BeanSerializer {
     private static final BeanSerializer INSTANCE = new BeanSerializer();
     static final int SERIALIZE_VERSION = 1;
 
-    private ReflectUtil reflectUtil = ReflectUtil.getINSTANCE();
-    private SerializeUtil serializeUtil = SerializeUtil.getINSTANCE();
-
-    public void setReflectUtil(ReflectUtil reflectUtil) {
-        this.reflectUtil = reflectUtil;
-    }
-
     public static BeanSerializer getInstance() {
         return BeanSerializer.INSTANCE;
     }
@@ -25,21 +18,21 @@ class BeanSerializer {
     <T> byte[] encode(T t) {
         ByteBuffer buffer = ByteBuffer.allocate(2048);
 
-        buffer.put(serializeUtil.encodeInt(SERIALIZE_VERSION));
+        buffer.put(SerializeUtil.encodeInt(SERIALIZE_VERSION));
 
         Class clz = t.getClass();
-        JitBean jitBean = reflectUtil.getTypeAnnotation(clz, JitBean.class);
-        byte[] beanName = serializeUtil.encodeStr(jitBean.name());
+        JitBean jitBean = ReflectUtil.getTypeAnnotation(clz, JitBean.class);
+        byte[] beanName = SerializeUtil.encodeStr(jitBean.name());
         fillBuffer(buffer, beanName);
 
-        Field keyField = reflectUtil.getFieldByAnnotation(clz, JitKey.class);
+        Field keyField = ReflectUtil.getFieldByAnnotation(clz, JitKey.class);
         byte[] key = encodeField(t, keyField);
         fillBuffer(buffer, key);
 
-        List<Field> fields = reflectUtil.getFieldsByAnnotation(clz, JitField.class);
+        List<Field> fields = ReflectUtil.getFieldsByAnnotation(clz, JitField.class);
         orderByJitFieldSortValue(fields);
 
-        buffer.put(serializeUtil.encodeInt(fields.size()));
+        buffer.put(SerializeUtil.encodeInt(fields.size()));
 
         fields.forEach(field -> fillBuffer(buffer, encodeField(t, field)));
 
@@ -57,9 +50,9 @@ class BeanSerializer {
         int serializeVersion = buffer.getInt();
 
         byte[] beanNameBytes = getBuffer(buffer);
-        String beanName = serializeUtil.decodeStr(beanNameBytes);
+        String beanName = SerializeUtil.decodeStr(beanNameBytes);
 
-        JitBean jitBean = reflectUtil.getTypeAnnotation(clz, JitBean.class);
+        JitBean jitBean = ReflectUtil.getTypeAnnotation(clz, JitBean.class);
         String actualName = jitBean.name();
         if (!beanName.equals(actualName))
             throw new BeanNotMatchException("try to decode the entity of bean[" + beanName + "], but byte data is a entity of class[" + actualName + "].");
@@ -75,13 +68,13 @@ class BeanSerializer {
 
         try {
             byte[] keyBytes = getBuffer(buffer);
-            String key = serializeUtil.decodeStr(keyBytes);
-            Field keyField = reflectUtil.getFieldByAnnotation(clz, JitKey.class);
+            String key = SerializeUtil.decodeStr(keyBytes);
+            Field keyField = ReflectUtil.getFieldByAnnotation(clz, JitKey.class);
             accessField(keyField);
             keyField.set(entity, key);
 
             int fieldCount = buffer.getInt();
-            List<Field> fields = reflectUtil.getFieldsByAnnotation(clz, JitField.class);
+            List<Field> fields = ReflectUtil.getFieldsByAnnotation(clz, JitField.class);
             orderByJitFieldSortValue(fields);
             fields = fields.subList(0, fieldCount);
 
@@ -102,7 +95,7 @@ class BeanSerializer {
 
     private void fillBuffer(ByteBuffer buffer, byte[] bytes) {
         int size = bytes.length;
-        buffer.put(serializeUtil.encodeInt(size));
+        buffer.put(SerializeUtil.encodeInt(size));
         buffer.put(bytes);
     }
 
@@ -120,11 +113,11 @@ class BeanSerializer {
             accessField(field);
             Class type = field.getType();
             if (type == Integer.TYPE || type == Integer.class)
-                return serializeUtil.encodeInt(field.getInt(obj));
+                return SerializeUtil.encodeInt(field.getInt(obj));
             else if (type == Long.TYPE || type == Long.class)
-                return serializeUtil.encodeLong(field.getLong(obj));
+                return SerializeUtil.encodeLong(field.getLong(obj));
             else if (type == String.class)
-                return serializeUtil.encodeStr((String) field.get(obj));
+                return SerializeUtil.encodeStr((String) field.get(obj));
             else
                 throw new TypeNotSupportException("not support field type[" + type + "] now.");
         } catch (IllegalAccessException e) {
@@ -135,11 +128,11 @@ class BeanSerializer {
     Object decodeField(Field field, byte[] bytes) {
         Class type = field.getType();
         if (type == Integer.TYPE || type == Integer.class)
-            return serializeUtil.decodeInt(bytes);
+            return SerializeUtil.decodeInt(bytes);
         else if (type == Long.TYPE || type == Long.class)
-            return serializeUtil.decodeLong(bytes);
+            return SerializeUtil.decodeLong(bytes);
         else if (type == String.class)
-            return serializeUtil.decodeStr(bytes);
+            return SerializeUtil.decodeStr(bytes);
         else
             throw new TypeNotSupportException("not support field type[" + type + "] now.");
     }

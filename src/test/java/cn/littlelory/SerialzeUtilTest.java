@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
  * Created by littlelory on 2017/8/28.
  */
 public class SerialzeUtilTest {
-    private SerializeUtil serializeUtil = SerializeUtil.getINSTANCE();
-
     @Test
     public void encode_positive_int_value() {
         int value = Integer.MAX_VALUE;
@@ -20,7 +18,7 @@ public class SerialzeUtilTest {
         expect[1] = (byte) 0xff;
         expect[0] = (byte) 0x7f;
 
-        byte[] actual = serializeUtil.encodeInt(value);
+        byte[] actual = SerializeUtil.encodeInt(value);
 
         assertEquals(expect.length, actual.length);
         assertBytesEquals(expect, actual);
@@ -36,7 +34,7 @@ public class SerialzeUtilTest {
         expect[1] = (byte) 0x00;
         expect[0] = (byte) 0x80;
 
-        byte[] actual = serializeUtil.encodeInt(value);
+        byte[] actual = SerializeUtil.encodeInt(value);
 
         assertEquals(expect.length, actual.length);
         assertBytesEquals(expect, actual);
@@ -50,7 +48,7 @@ public class SerialzeUtilTest {
         bytes[1] = (byte) 0xff;
         bytes[0] = (byte) 0x7f;
 
-        assertEquals(Integer.MAX_VALUE, serializeUtil.decodeInt(bytes));
+        assertEquals(Integer.MAX_VALUE, SerializeUtil.decodeInt(bytes));
     }
 
     @Test
@@ -61,7 +59,7 @@ public class SerialzeUtilTest {
         bytes[1] = (byte) 0x00;
         bytes[0] = (byte) 0x80;
 
-        assertEquals(Integer.MIN_VALUE, serializeUtil.decodeInt(bytes));
+        assertEquals(Integer.MIN_VALUE, SerializeUtil.decodeInt(bytes));
     }
 
     @Test
@@ -78,7 +76,7 @@ public class SerialzeUtilTest {
         expect[1] = (byte) 0xff;
         expect[0] = (byte) 0x7f;
 
-        byte[] actual = serializeUtil.encodeLong(value);
+        byte[] actual = SerializeUtil.encodeLong(value);
 
         assertEquals(expect.length, actual.length);
         assertBytesEquals(expect, actual);
@@ -98,7 +96,7 @@ public class SerialzeUtilTest {
         expect[1] = (byte) 0x00;
         expect[0] = (byte) 0x80;
 
-        byte[] actual = serializeUtil.encodeLong(value);
+        byte[] actual = SerializeUtil.encodeLong(value);
 
         assertEquals(expect.length, actual.length);
         assertBytesEquals(expect, actual);
@@ -116,7 +114,7 @@ public class SerialzeUtilTest {
         bytes[1] = (byte) 0xff;
         bytes[0] = (byte) 0x7f;
 
-        assertEquals(Long.MAX_VALUE, serializeUtil.decodeLong(bytes));
+        assertEquals(Long.MAX_VALUE, SerializeUtil.decodeLong(bytes));
     }
 
     @Test
@@ -131,7 +129,7 @@ public class SerialzeUtilTest {
         bytes[1] = (byte) 0x00;
         bytes[0] = (byte) 0x80;
 
-        assertEquals(Long.MIN_VALUE, serializeUtil.decodeLong(bytes));
+        assertEquals(Long.MIN_VALUE, SerializeUtil.decodeLong(bytes));
     }
 
     @Test
@@ -143,7 +141,7 @@ public class SerialzeUtilTest {
         expect[1] = 'b';
         expect[2] = 'c';
 
-        byte[] actual = serializeUtil.encodeStr(value);
+        byte[] actual = SerializeUtil.encodeStr(value);
 
         assertEquals(expect.length, actual.length);
         assertBytesEquals(expect, actual);
@@ -152,14 +150,14 @@ public class SerialzeUtilTest {
     @Test
     public void encode_null_str() {
         String value = null;
-        byte[] actual = serializeUtil.encodeStr(value);
+        byte[] actual = SerializeUtil.encodeStr(value);
         assertEquals(0, actual.length);
     }
 
     @Test
     public void encode_blank_str() {
         String value = "";
-        byte[] actual = serializeUtil.encodeStr(value);
+        byte[] actual = SerializeUtil.encodeStr(value);
         assertEquals(0, actual.length);
     }
 
