@@ -14,4 +14,8 @@ class TestUtil {
                 throw new AssertionError(e.getMessage() + "\nindex\t:" + i + "\n", e);
             }
     }
+
+    static String resourcesPath() {
+        return TestUtil.class.getResource("/").getPath();
+    }
 }
