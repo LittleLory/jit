@@ -12,30 +12,30 @@ import static org.junit.Assert.*;
  */
 public class ObjectTypeTest {
     @Test
-    public void get_node_type_by_id() {
-        Optional<JitObjectType> optional = Arrays.stream(JitObjectType.values()).filter(type -> type.name().equals("NODE")).findFirst();
+    public void get_object_type_by_id() {
+        Optional<JitBlobType> optional = Arrays.stream(JitBlobType.values()).filter(type -> type.name().equals("OBJECT")).findFirst();
         assertTrue(optional.isPresent());
-        JitObjectType expect = optional.get();
+        JitBlobType expect = optional.get();
         int typeId = expect.getId();
 
-        JitObjectType actual = JitObjectType.getTypeById(typeId);
+        JitBlobType actual = JitBlobType.getTypeById(typeId);
         assertEquals(expect, actual);
     }
 
     @Test
     public void get_tree_type_by_id() {
-        Optional<JitObjectType> optional = Arrays.stream(JitObjectType.values()).filter(type -> type.name().equals("TREE")).findFirst();
+        Optional<JitBlobType> optional = Arrays.stream(JitBlobType.values()).filter(type -> type.name().equals("TREE")).findFirst();
         assertTrue(optional.isPresent());
-        JitObjectType expect = optional.get();
+        JitBlobType expect = optional.get();
         int typeId = expect.getId();
 
-        JitObjectType actual = JitObjectType.getTypeById(typeId);
+        JitBlobType actual = JitBlobType.getTypeById(typeId);
         assertEquals(expect, actual);
     }
 
     @Test(expected = RuntimeException.class)
     public void get_other_type_by_id() {
         int typeId = 3;
-        JitObjectType.getTypeById(typeId);
+        JitBlobType.getTypeById(typeId);
     }
 }

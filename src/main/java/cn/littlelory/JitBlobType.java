@@ -6,14 +6,14 @@ import java.util.Optional;
 /**
  * Created by littlelory on 2017/8/28.
  */
-public enum JitObjectType {
+public enum JitBlobType {
     TREE(1, JitTree.class),
-    NODE(2, JitNode.class);
+    OBJECT(2, JitObject.class);
 
     private int id;
-    private Class<? extends JitObject> clz;
+    private Class<? extends JitBlob> clz;
 
-    JitObjectType(int id, Class<? extends JitObject> clz) {
+    JitBlobType(int id, Class<? extends JitBlob> clz) {
         this.id = id;
         this.clz = clz;
     }
@@ -26,8 +26,8 @@ public enum JitObjectType {
         return clz;
     }
 
-    public static JitObjectType getTypeById(int id) {
-        Optional<JitObjectType> result = Arrays.stream(JitObjectType.values()).filter(type -> type.id == id).findFirst();
+    public static JitBlobType getTypeById(int id) {
+        Optional<JitBlobType> result = Arrays.stream(JitBlobType.values()).filter(type -> type.id == id).findFirst();
         if (!result.isPresent())
             throw new RuntimeException("typeId[" + id + "] is not exist.");
         return result.get();

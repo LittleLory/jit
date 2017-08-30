@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 /**
  * Created by littlelory on 2017/8/28.
  */
-class JitTree extends JitObject {
+class JitTree extends JitBlob {
 
     private List<Child> children;
 
@@ -17,11 +17,11 @@ class JitTree extends JitObject {
     }
 
     JitTree(String pathname) {
-        super(pathname, JitObjectType.TREE);
+        super(pathname, JitBlobType.TREE);
         this.children = new ArrayList<>();
     }
 
-    void addChild(JitObjectType type, String pathname, String fingerprint) {
+    void addChild(JitBlobType type, String pathname, String fingerprint) {
         this.children.add(new Child(type, pathname, fingerprint));
     }
 
@@ -78,14 +78,14 @@ class JitTree extends JitObject {
     }
 
     static class Child {
-        JitObjectType type;
+        JitBlobType type;
         String pathname;
         String fingerprint;
 
         Child() {
         }
 
-        Child(JitObjectType type, String pathname, String fingerprint) {
+        Child(JitBlobType type, String pathname, String fingerprint) {
             this.type = type;
             this.pathname = pathname;
             this.fingerprint = fingerprint;
@@ -101,12 +101,12 @@ class JitTree extends JitObject {
 
         void decode(byte[] bytes) {
             ByteBuffer buffer = ByteBuffer.wrap(bytes);
-            this.type = JitObjectType.getTypeById(buffer.getInt());
+            this.type = JitBlobType.getTypeById(buffer.getInt());
             this.pathname = SerializeUtil.decodeStr(ByteBufferUtil.getBuffer(buffer));
             this.fingerprint = SerializeUtil.decodeStr(ByteBufferUtil.getBuffer(buffer));
         }
 
-        public JitObjectType getType() {
+        public JitBlobType getType() {
             return type;
         }
 

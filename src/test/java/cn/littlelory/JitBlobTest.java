@@ -11,15 +11,15 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by littlelory on 2017/8/28.
  */
-public class JitObjectTest {
+public class JitBlobTest {
 
     @Test
-    public void node_encode() {
+    public void object_encode() {
         String pathname = "/dir/a.file";
         byte[] data = new byte[]{0x74, 0x65, 0x73, 0x74};
 
-        JitNode node = new JitNode(pathname, data);
-        byte[] actual = node.encode();
+        JitObject object = new JitObject(pathname, data);
+        byte[] actual = object.encode();
 
         byte[] expect = new byte[]{
                 0x0, 0x0, 0x0, 0x2,//object type id
@@ -34,7 +34,7 @@ public class JitObjectTest {
     }
 
     @Test
-    public void node_decode() {
+    public void object_decode() {
         byte[] bytes = new byte[]{
                 0x0, 0x0, 0x0, 0x2,//object type id
                 0x0, 0x0, 0x0, 0xb,//object pathname length
@@ -43,16 +43,16 @@ public class JitObjectTest {
                 0x74, 0x65, 0x73, 0x74//object body
         };
 
-        JitNode node = new JitNode();
-        node.decode(bytes);
+        JitObject object = new JitObject();
+        object.decode(bytes);
 
-        assertEquals(2, node.getType().getId());
-        assertEquals("/dir/a.file", node.getPathname());
-        assertBytesEquals(new byte[]{0x74, 0x65, 0x73, 0x74}, node.getData());
+        assertEquals(2, object.getType().getId());
+        assertEquals("/dir/a.file", object.getPathname());
+        assertBytesEquals(new byte[]{0x74, 0x65, 0x73, 0x74}, object.getData());
     }
 
     @Test
-    public void type_of_node_bytes() {
+    public void type_of_object_bytes() {
         byte[] bytes = new byte[]{
                 0x0, 0x0, 0x0, 0x2,//object type id
                 0x0, 0x0, 0x0, 0xb,//object pathname length
@@ -61,7 +61,7 @@ public class JitObjectTest {
                 0x74, 0x65, 0x73, 0x74//object body
         };
 
-        assertEquals(JitObjectType.NODE, JitObject.typeOf(bytes));
+        assertEquals(JitBlobType.OBJECT, JitBlob.typeOf(bytes));
     }
 
     @Test
@@ -69,13 +69,13 @@ public class JitObjectTest {
         String treePathname = "/dir";
         JitTree tree = new JitTree(treePathname);
 
-        JitObjectType nodeType = JitObjectType.NODE;
-        String nodePathname = "/dir/a.file";
+        JitBlobType blobType = JitBlobType.OBJECT;
+        String blobPathname = "/dir/a.file";
         String fingerprint = "finger";
 
-        tree.addChild(nodeType, nodePathname, fingerprint);
+        tree.addChild(blobType, blobPathname, fingerprint);
 
-//        tree.addChild(node);
+//        tree.addChild(object);
         byte[] actual = tree.encode();
 
         byte[] expect = new byte[]{
@@ -85,9 +85,9 @@ public class JitObjectTest {
                 0x0, 0x0, 0x0, 0x25,//object body length
                     //tree
                     0x0, 0x0, 0x0, 0x1,//children count
-                        //node
-                        0x0, 0x0, 0x0, 0x1d,//node length
-                        0x0, 0x0, 0x0, 0x2,//node type id
+                        //object
+                        0x0, 0x0, 0x0, 0x1d,//object length
+                        0x0, 0x0, 0x0, 0x2,//object type id
                         0x0, 0x0, 0x0, 0xb,//pathname length
                         0x2F, 0x64, 0x69, 0x72, 0x2F, 0x61, 0x2E, 0x66, 0x69, 0x6C, 0x65,//pathname
                         0x0, 0x0, 0x0, 0x6,//fingerprint length
@@ -106,9 +106,9 @@ public class JitObjectTest {
                 0x0, 0x0, 0x0, 0x25,//object body length
                 //tree
                 0x0, 0x0, 0x0, 0x1,//children count
-                //node
-                0x0, 0x0, 0x0, 0x1d,//node length
-                0x0, 0x0, 0x0, 0x2,//node type id
+                //object
+                0x0, 0x0, 0x0, 0x1d,//object length
+                0x0, 0x0, 0x0, 0x2,//object type id
                 0x0, 0x0, 0x0, 0xb,//pathname length
                 0x2F, 0x64, 0x69, 0x72, 0x2F, 0x61, 0x2E, 0x66, 0x69, 0x6C, 0x65,//pathname
                 0x0, 0x0, 0x0, 0x6,//fingerprint length
