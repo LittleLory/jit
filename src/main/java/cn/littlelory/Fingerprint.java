@@ -23,6 +23,7 @@ class Fingerprint {
         Objects.requireNonNull(bytes);
 
         try {
+            messageDigest.reset();
             messageDigest.update(bytes);
             MessageDigest md = (MessageDigest) messageDigest.clone();
             return bytesToHexStr(md.digest());
