@@ -10,9 +10,9 @@ import java.nio.file.Paths;
 /**
  * Created by littlelory on 31/08/2017.
  */
-public class IndexTest {
+public class TempSpaceTest {
     private String indexPath;
-    private Index index;
+    private TempSpace tempSpace;
 
     @Before
     public void init() throws IOException {
@@ -41,12 +41,12 @@ public class IndexTest {
 
         Files.write(Paths.get(indexPath), bytes);
 
-        index = new Index(indexPath);
+        tempSpace = new TempSpace(indexPath);
     }
 
     @Test
     public void add_a_new_entry() throws IOException {
-        index.add("b.txt", "81c545efebe5f57d4cab2ba9ec294c4b0cadf672");
+        tempSpace.add("b.txt", "81c545efebe5f57d4cab2ba9ec294c4b0cadf672");
         byte[] actual = readBytesFromIndex();
         byte[] expect = new byte[] {
                 0x0,0x0,0x0,0x3,//length = 3
@@ -81,12 +81,12 @@ public class IndexTest {
 
     @Test(expected = IndexAlreadyExistExpetion.class)
     public void add_an_exist_entry() {
-        index.add("a.txt", "72943a16fb2c8f38f9dde202b7a70ccc19c52f34");
+        tempSpace.add("a.txt", "72943a16fb2c8f38f9dde202b7a70ccc19c52f34");
     }
 
     @Test
     public void update_an_entry() throws IOException {
-        index.update("a.txt", "81c545efebe5f57d4cab2ba9ec294c4b0cadf672");
+        tempSpace.update("a.txt", "81c545efebe5f57d4cab2ba9ec294c4b0cadf672");
         byte[] actual = readBytesFromIndex();
         byte[] expect = new byte[]{
                 0x0,0x0,0x0,0x2,//length = 2
@@ -113,12 +113,12 @@ public class IndexTest {
 
     @Test(expected = NoSuchIndexException.class)
     public void update_a_not_exist_entry() {
-        index.update("c.txt", "81c545efebe5f57d4cab2ba9ec294c4b0cadf672");
+        tempSpace.update("c.txt", "81c545efebe5f57d4cab2ba9ec294c4b0cadf672");
     }
 
     @Test
     public void remove_an_entry() throws IOException {
-        index.remove("a.txt");
+        tempSpace.remove("a.txt");
         byte[] actual = readBytesFromIndex();
         byte[] expect = new byte[]{
                 0x0,0x0,0x0,0x1,//length = 2
@@ -137,7 +137,7 @@ public class IndexTest {
 
     @Test(expected = NoSuchIndexException.class)
     public void remove_a_not_exist_entry() {
-        index.remove("c.txt");
+        tempSpace.remove("c.txt");
     }
 
 

@@ -1,40 +1,49 @@
 package cn.littlelory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 
 /**
  * Created by littlelory on 2017/8/25.
  */
 class FileUtil {
 
-    static void writeBytes(String pathname, byte[] bytes) throws IOException {
-        Files.write(path(pathname), bytes);
+    static void writeBytes(String pathname, byte[] bytes) {
+        try {
+            Files.write(path(pathname), bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
-    static void writeStr(String pathname, String str) throws IOException {
+    static void writeStr(String pathname, String str) {
         byte[] bytes = str.getBytes();
         writeBytes(pathname, bytes);
     }
 
-    static void appendBytes(String pathname, byte[] bytes) throws IOException {
-        Files.write(path(pathname), bytes, StandardOpenOption.APPEND);
+    static void appendBytes(String pathname, byte[] bytes) {
+        try {
+            Files.write(path(pathname), bytes, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
-    static byte[] readBytes(String pathname) throws IOException {
-        return Files.readAllBytes(path(pathname));
+    static byte[] readBytes(String pathname) {
+        try {
+            return Files.readAllBytes(path(pathname));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
 
-    static String readStr(String pathname) throws IOException {
+    static String readStr(String pathname) {
         byte[] bytes = readBytes(pathname);
         return new String(bytes);
     }
 
-    static void appendStr(String pathname, String str) throws IOException {
+    static void appendStr(String pathname, String str) {
         byte[] bytes = str.getBytes();
         appendBytes(pathname, bytes);
     }
@@ -43,11 +52,15 @@ class FileUtil {
         return Files.exists(path(pathname));
     }
 
-    static void mkdir(String pathname) throws IOException {
-        Files.createDirectory(path(pathname));
+    static void mkdir(String pathname) {
+        try {
+            Files.createDirectory(path(pathname));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
-    static void mkdirIfNotExist(String pathname) throws IOException {
+    static void mkdirIfNotExist(String pathname) {
         if (!exist(pathname))
             mkdir(pathname);
     }

@@ -66,26 +66,26 @@ public class FileUtilTest {
     }
 
     @Test
-    public void read_bytes() throws IOException {
+    public void read_bytes() {
         byte[] expect = new byte[]{0x66,0x69,0x6C,0x65,0x33};
         byte[] actual = FileUtil.readBytes(DATADIR + "file3.txt");
         assertBytesEquals(expect, actual);
     }
 
     @Test
-    public void read_str() throws IOException {
+    public void read_str() {
         String expect = "test";
         String actual = FileUtil.readStr(DATADIR + "file4.txt");
         assertEquals(expect, actual);
     }
 
-    @Test(expected = IOException.class)
-    public void read_bytes_and_file_not_exist() throws IOException {
+    @Test(expected = RuntimeException.class)
+    public void read_bytes_and_file_not_exist() {
         FileUtil.readBytes(DATADIR + "notExist.txt");
     }
 
-    @Test(expected = IOException.class)
-    public void read_a_directory() throws IOException {
+    @Test(expected = RuntimeException.class)
+    public void read_a_directory() {
         FileUtil.readBytes(TestUtil.resourcesPath());
     }
 
@@ -100,8 +100,8 @@ public class FileUtilTest {
         assertTrue(Files.exists(path));
     }
 
-    @Test(expected = FileAlreadyExistsException.class)
-    public void mkdir_and_directory_exist() throws IOException {
+    @Test(expected = RuntimeException.class)
+    public void mkdir_and_directory_exist() {
         String pathname = DATADIR + "dir2";
         FileUtil.mkdir(pathname);
     }
