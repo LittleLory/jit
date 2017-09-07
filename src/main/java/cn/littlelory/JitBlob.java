@@ -16,7 +16,7 @@ abstract class JitBlob {
     }
 
     JitBlob(String pathname, JitBlobType type) {
-        assert pathname != null && pathname.length() > 0 && pathname.length() < 128;
+        assert pathname != null && pathname.length() >= 0 && pathname.length() < 128;
         this.pathname = pathname;
         this.type = type;
     }

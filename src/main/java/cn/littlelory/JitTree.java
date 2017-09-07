@@ -26,7 +26,7 @@ class JitTree extends JitBlob {
     }
 
     List<Child> getChildren() {
-        List<Child> result = Arrays.asList(new Child[1]);
+        List<Child> result = Arrays.asList(new Child[children.size()]);
         Collections.copy(result, children);
         return result;
     }
