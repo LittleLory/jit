@@ -15,10 +15,10 @@ class LocalSpace {
     LocalSpace(String objectsDirPath, String headPath) {
         this.objectsDirPath = objectsDirPath;
         this.headPath = headPath;
+        blobs = new HashMap<>();
 
         if (FileUtil.exist(headPath)) {
             this.head = FileUtil.readStr(headPath);
-            blobs = new HashMap<>();
             walk(head, JitBlobType.TREE);
         }
     }

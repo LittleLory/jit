@@ -1,12 +1,6 @@
 package cn.littlelory;
 
-import org.easymock.EasyMock;
-import org.easymock.MockType;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created by littlelory on 2017/8/23.

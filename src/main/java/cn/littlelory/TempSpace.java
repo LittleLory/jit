@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 /**
  * Created by littlelory on 31/08/2017.
  */
-final class TempSpace {
+class TempSpace {
     private final String indexPathname;
     private List<FileEntry> entries;
 
