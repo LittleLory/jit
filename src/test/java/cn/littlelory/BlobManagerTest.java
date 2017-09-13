@@ -42,7 +42,7 @@ public class BlobManagerTest {
     }
 
     @Test
-    public void file_untracked() {
+    public void status_untracked() {
         WorkSpace workSpace = createMock(WorkSpace.class);
         List<FileEntry> workList = new ArrayList<>();
         workList.add(new FileEntry("a.txt", "a"));
@@ -70,7 +70,7 @@ public class BlobManagerTest {
     }
 
     @Test
-    public void file_modified() {
+    public void status_modified() {
         WorkSpace workSpace = createMock(WorkSpace.class);
         List<FileEntry> workList = new ArrayList<>();
         workList.add(new FileEntry("a.txt", "a"));
@@ -99,7 +99,7 @@ public class BlobManagerTest {
     }
 
     @Test
-    public void file_added() {
+    public void status_added() {
         WorkSpace workSpace = createMock(WorkSpace.class);
         List<FileEntry> workList = new ArrayList<>();
         workList.add(new FileEntry("a.txt", "a"));
@@ -128,7 +128,7 @@ public class BlobManagerTest {
     }
 
     @Test
-    public void file_delete() {
+    public void status_delete() {
         WorkSpace workSpace = createMock(WorkSpace.class);
         List<FileEntry> workList = new ArrayList<>();
         expect(workSpace.list()).andReturn(workList);
@@ -156,7 +156,7 @@ public class BlobManagerTest {
     }
 
     @Test
-    public void file_nothing() {
+    public void status_nothing() {
         WorkSpace workSpace = createMock(WorkSpace.class);
         List<FileEntry> workList = new ArrayList<>();
         expect(workSpace.list()).andReturn(workList);

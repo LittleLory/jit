@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Created by littlelory on 29/08/2017.
@@ -40,9 +39,9 @@ class BlobManager {
         this.headLogPath = this.logDirPath + "/HEAD";
         this.objectsDirPath = this.libDirPath + "/objects";
 
-        tempSpace = new TempSpace(this.indexPath);
+        tempSpace = new TempSpace(this.baseDirPath, this.objectsDirPath, this.indexPath);
         workSpace = new WorkSpace(this.baseDirPath);
-        localSpace = new LocalSpace(this.objectsDirPath, this.headPath);
+        localSpace = new LocalSpace(this.objectsDirPath, this.headPath, this.headLogPath);
     }
 
     void init() throws IOException {
@@ -99,29 +98,30 @@ class BlobManager {
         return result;
     }
 
-    private void updateHEAD(String fingerprint) throws IOException {
-        FileUtil.writeStr(headPath, fingerprint);
+    //todo how to process the condition that the pathname is not in untracked status?
+    String add(String pathname) {
+        byte[] dataBytes = workSpace.search(pathname);
+        if (dataBytes != null) {
+            return tempSpace.add(pathname);
+        }
+        return null;
     }
 
-    private String writeObject(JitBlob object) throws IOException {
-        byte[] bytes = object.encode();
-        String fingerprint = Fingerprint.generate(bytes);
-        String firstDir = objectsDirPath + "/" + fingerprint.substring(0, 2);
-        FileUtil.mkdirIfNotExist(firstDir);
-        String objectPath = firstDir + "/" + fingerprint.substring(2);
-        FileUtil.writeBytes(objectPath, bytes);
-        return fingerprint;
+    String commit() {
+        String head = tempSpace.build();
+        localSpace.rebuild(head);
+        return head;
     }
 
-    public void setWorkSpace(WorkSpace workSpace) {
+    void setWorkSpace(WorkSpace workSpace) {
         this.workSpace = workSpace;
     }
 
-    public void setTempSpace(TempSpace tempSpace) {
+    void setTempSpace(TempSpace tempSpace) {
         this.tempSpace = tempSpace;
     }
 
-    public void setLocalSpace(LocalSpace localSpace) {
+    void setLocalSpace(LocalSpace localSpace) {
         this.localSpace = localSpace;
     }
 }

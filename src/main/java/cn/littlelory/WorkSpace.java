@@ -18,6 +18,11 @@ class WorkSpace {
         this.basePath = basePath;
     }
 
+    byte[] search(String pathname) {
+        String absolutePath = basePath + "/" + pathname;
+        return FileUtil.exist(absolutePath) ? FileUtil.readBytes(absolutePath) : null;
+    }
+
     List<FileEntry> list() {
         FileVisitor fileVisitor = new FileVisitor();
         try {

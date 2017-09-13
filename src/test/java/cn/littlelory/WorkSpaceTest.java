@@ -18,7 +18,7 @@ public class WorkSpaceTest {
     }
 
     @Test
-    public void allFiles() throws Exception {
+    public void list() throws Exception {
         List<FileEntry> result = workSpace.list();
         assertNotNull(result);
         assertEquals(3, result.size());
@@ -27,4 +27,8 @@ public class WorkSpaceTest {
         assertEquals("dir2/dir3/c.txt", result.get(2).getPathname());
     }
 
+    @Test
+    public void search() {
+        TestUtil.assertBytesEquals(new byte[]{0x61, 0x62, 0x63}, workSpace.search("a.txt"));
+    }
 }

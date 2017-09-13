@@ -15,6 +15,7 @@ public class LocalSpaceTest {
     private LocalSpace localSpace;
     private static final String OBJECT_DIR = TestUtil.resourcesPath() + "data/manager/local/.jit/objects";
     private static final String HEAD_PATH = TestUtil.resourcesPath() + "data/manager/local/.jit/HEAD";
+    private static final String HEAD_LOG_PATH = TestUtil.resourcesPath() + "data/manager/local/.jit/logs/HEAD";
 
     @Before
     public void init() {
@@ -53,7 +54,7 @@ public class LocalSpaceTest {
         FileUtil.mkdirIfNotExist(OBJECT_DIR + "/" + fingerprint4.substring(0,2));
         FileUtil.writeBytes(OBJECT_DIR + "/" + fingerprint4.substring(0,2) + "/" + fingerprint4.substring(2), bytes4);
 
-        localSpace = new LocalSpace(OBJECT_DIR, HEAD_PATH);
+        localSpace = new LocalSpace(OBJECT_DIR, HEAD_PATH, HEAD_LOG_PATH);
     }
 
     @Test
