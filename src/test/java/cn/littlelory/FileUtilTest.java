@@ -3,9 +3,8 @@ package cn.littlelory;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
+import java.util.List;
 
 import static cn.littlelory.TestUtil.assertBytesEquals;
 import static java.nio.file.Paths.*;
@@ -126,5 +125,28 @@ public class FileUtilTest {
         FileUtil.mkdirIfNotExist(pathname);
 
         assertTrue(Files.exists(path));
+    }
+
+    @Test
+    public void remove_exist_file() throws IOException {
+        String pathname = DATADIR + "file5.txt";
+        Files.write(Paths.get(pathname), new byte[0], StandardOpenOption.CREATE);
+        FileUtil.remove(pathname);
+        assertFalse(Files.exists(Paths.get(pathname)));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void remove_not_exist_file() {
+        String pathname = DATADIR + "notExist.txt";
+        FileUtil.remove(pathname);
+    }
+
+    @Test
+    public void list() {
+        String dirPath = DATADIR + "dir5";
+        List<String> list = FileUtil.list(dirPath);
+        assertTrue(list.size() == 2);
+        assertEquals("a.txt", list.get(0));
+        assertEquals("b.txt", list.get(1));
     }
 }

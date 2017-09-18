@@ -9,6 +9,7 @@ import java.util.List;
  */
 class BeanSerializer {
     private static final BeanSerializer INSTANCE = new BeanSerializer();
+    private JitBeanUtil beanUtil = JitBeanUtil.getINSTANCE();
     static final int SERIALIZE_VERSION = 1;
 
     public static BeanSerializer getInstance() {
@@ -21,8 +22,7 @@ class BeanSerializer {
         buffer.put(SerializeUtil.encodeInt(SERIALIZE_VERSION));
 
         Class clz = t.getClass();
-        JitBean jitBean = ReflectUtil.getTypeAnnotation(clz, JitBean.class);
-        byte[] beanName = SerializeUtil.encodeStr(jitBean.name());
+        byte[] beanName = SerializeUtil.encodeStr(beanUtil.getBeanName(clz));
         ByteBufferUtil.fillBuffer(buffer, beanName);
 
         Field keyField = ReflectUtil.getFieldByAnnotation(clz, JitKey.class);
@@ -52,8 +52,7 @@ class BeanSerializer {
         byte[] beanNameBytes = ByteBufferUtil.getBuffer(buffer);
         String beanName = SerializeUtil.decodeStr(beanNameBytes);
 
-        JitBean jitBean = ReflectUtil.getTypeAnnotation(clz, JitBean.class);
-        String actualName = jitBean.name();
+        String actualName = beanUtil.getBeanName(clz);
         if (!beanName.equals(actualName))
             throw new BeanNotMatchException("try to decode the entity of bean[" + beanName + "], but byte data is a entity of class[" + actualName + "].");
 

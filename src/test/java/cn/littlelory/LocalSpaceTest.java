@@ -13,9 +13,9 @@ import static org.junit.Assert.*;
  */
 public class LocalSpaceTest {
     private LocalSpace localSpace;
-    private static final String OBJECT_DIR = TestUtil.resourcesPath() + "data/manager/local/.jit/objects";
-    private static final String HEAD_PATH = TestUtil.resourcesPath() + "data/manager/local/.jit/HEAD";
-    private static final String HEAD_LOG_PATH = TestUtil.resourcesPath() + "data/manager/local/.jit/logs/HEAD";
+    private static final String OBJECT_DIR = TestUtil.resourcesPath() + "data/manager/.jit/objects";
+    private static final String HEAD_PATH = TestUtil.resourcesPath() + "data/manager/.jit/HEAD";
+    private static final String HEAD_LOG_PATH = TestUtil.resourcesPath() + "data/manager/.jit/logs/HEAD";
 
     @Before
     public void init() {

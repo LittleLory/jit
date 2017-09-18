@@ -9,15 +9,34 @@ import java.util.stream.Collectors;
 /**
  * Created by littlelory on 2017/8/23.
  */
-class AnnotationChecker {
-    private static final AnnotationChecker INSTANCE = new AnnotationChecker();
+class JitBeanUtil {
+    private static final JitBeanUtil INSTANCE = new JitBeanUtil();
 
-    static AnnotationChecker getINSTANCE() {
+    static JitBeanUtil getINSTANCE() {
         return INSTANCE;
+    }
+
+    String getBeanName(Class<?> clz) {
+        JitBean annotation = ReflectUtil.getTypeAnnotation(clz, JitBean.class);
+        return annotation != null ? annotation.name() : null;
+    }
+
+    <T> String getKey(T t) {
+        Field keyField = ReflectUtil.getFieldByAnnotation(t.getClass(), JitKey.class);
+        keyField.setAccessible(true);
+        try {
+            return (String) keyField.get(t);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     <T> void check(T t) {
         Class clz = t.getClass();
+        check(clz);
+    }
+
+    void check(Class<?> clz) {
         assertHaveBeanAnnotation(clz);
         assertKeyAnnotationLegal(clz);
         assertFieldAnnotationLegal(clz);
