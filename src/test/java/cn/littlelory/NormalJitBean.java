@@ -1,5 +1,7 @@
 package cn.littlelory;
 
+import java.util.Objects;
+
 /**
  * Created by littlelory on 2017/8/23.
  */
@@ -43,5 +45,20 @@ public class NormalJitBean {
                 ", f1=" + f1 +
                 ", f2=" + f2 +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NormalJitBean bean = (NormalJitBean) o;
+        return f1 == bean.f1 &&
+                f2 == bean.f2 &&
+                Objects.equals(key, bean.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, f1, f2);
     }
 }

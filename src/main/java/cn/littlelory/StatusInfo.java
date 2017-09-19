@@ -28,4 +28,12 @@ public class StatusInfo {
     public int hashCode() {
         return Objects.hash(path, status);
     }
+
+    @Override
+    public String toString() {
+        return "StatusInfo{" +
+                "path='" + path + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

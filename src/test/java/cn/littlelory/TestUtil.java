@@ -1,5 +1,9 @@
 package cn.littlelory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -17,5 +21,19 @@ class TestUtil {
 
     static String resourcesPath() {
         return TestUtil.class.getResource("/").getPath();
+    }
+
+    static void deleteIfExists(Path path) {
+        try {
+            if (!Files.exists(path))
+                return;
+
+            if (Files.isDirectory(path))
+                Files.list(path).forEach(TestUtil::deleteIfExists);
+
+            Files.delete(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

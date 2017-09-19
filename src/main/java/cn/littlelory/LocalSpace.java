@@ -61,12 +61,15 @@ class LocalSpace {
     }
 
     private String updateHEAD(String fingerprint) {
-        String headBefore = FileUtil.readStr(headPath);
+        String headBefore = FileUtil.exist(headPath) ? FileUtil.readStr(headPath) : "0000000000000000000000000000000000000000";
         FileUtil.writeStr(headPath, fingerprint);
         return headBefore;
     }
-
     private void updateHEADLog(String oldHead, String newHead) {
-        FileUtil.appendStr(headLogPath, oldHead + "\t" + newHead + "\t" + System.currentTimeMillis());
+        String logInfo = oldHead + "\t" + newHead + "\t" + System.currentTimeMillis();
+        if (FileUtil.exist(headLogPath))
+            FileUtil.appendStr(headLogPath, logInfo);
+        else
+            FileUtil.writeStr(headLogPath, logInfo);
     }
 }

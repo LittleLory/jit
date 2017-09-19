@@ -3,9 +3,7 @@ package cn.littlelory;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -13,7 +11,6 @@ import java.util.stream.Collectors;
  */
 class WorkSpace {
     private final String basePath;
-
     WorkSpace(String basePath) {
         this.basePath = basePath;
     }
@@ -24,14 +21,17 @@ class WorkSpace {
     }
 
     List<FileEntry> list() {
-        FileVisitor fileVisitor = new FileVisitor();
+        FileVisitor fileVisitor = new FileVisitor(basePath + "/.jit");
         try {
             Files.walkFileTree(Paths.get(basePath), fileVisitor);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return fileVisitor.getResult().stream()
-                .map(filePath -> new FileEntry(filePath.substring(basePath.length() + 1), Fingerprint.generate(FileUtil.readBytes(filePath))))
+                .map(filePath -> {
+                    String pathname = filePath.substring(basePath.length() + 1);
+                    return new FileEntry(pathname, Fingerprint.generate(new JitObject(pathname, FileUtil.readBytes(filePath)).encode()));
+                })
                 .sorted()
                 .collect(Collectors.toList());
     }
@@ -41,13 +41,15 @@ class WorkSpace {
     }
 
     private static final class FileVisitor implements java.nio.file.FileVisitor<Path> {
-        private List<String> list;
+        private String skipPath;
+        private Set<String> list;
 
-        FileVisitor() {
-            this.list = new ArrayList<>();
+        FileVisitor(String skipPath) {
+            this.skipPath = skipPath;
+            this.list = new HashSet<>();
         }
 
-        List<String> getResult() {
+        Set<String> getResult() {
             return list;
         }
 
@@ -58,7 +60,12 @@ class WorkSpace {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            list.add(file.toUri().getPath());
+            String pathname = file.toUri().getPath();
+            System.out.println("visit:" + pathname);
+            if (!pathname.startsWith(skipPath))
+                list.add(pathname);
+            else
+                System.out.println("skip:" + pathname);
             return FileVisitResult.CONTINUE;
         }
 

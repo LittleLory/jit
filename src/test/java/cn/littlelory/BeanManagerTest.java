@@ -78,9 +78,9 @@ public class BeanManagerTest {
         assertEquals("2", bean.getKey());
     }
 
-    @Test(expected = BeanNotExistException.class)
+    @Test
     public void get_a_not_exist_bean() throws BeanNotExistException {
-        beanManager.get(NormalJitBean.class, "111");
+        assertNull(beanManager.get(NormalJitBean.class, "111"));
     }
 
     @Test

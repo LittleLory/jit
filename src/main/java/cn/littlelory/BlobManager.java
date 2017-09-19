@@ -27,10 +27,10 @@ class BlobManager {
     private TempSpace tempSpace;
     private LocalSpace localSpace;
 
-    BlobManager(String baseDirPath) throws FileNotFoundException {
+    BlobManager(String baseDirPath) {
         this.baseDirPath = baseDirPath;
         if (!FileUtil.exist(baseDirPath))
-            throw new FileNotFoundException("directory[" + baseDirPath + "] is not found.");
+            throw new RuntimeException("directory[" + baseDirPath + "] is not found.");
 
         this.libDirPath = baseDirPath + "/" + LIB_DIR;
         this.headPath = this.libDirPath + "/HEAD";

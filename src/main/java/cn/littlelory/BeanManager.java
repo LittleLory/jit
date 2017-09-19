@@ -37,11 +37,12 @@ class BeanManager {
         return bean;
     }
 
-    <T> T get(Class<T> clz, String key) throws BeanNotExistException {
+    <T> T get(Class<T> clz, String key) {
         checkClass(clz);
         String beanName = jitBeanUtil.getBeanName(clz);
         String beanPath = beanPath(beanName, key);
-        assertBeanExist(beanName, key);
+        if (!FileUtil.exist(beanPath(beanName, key)))
+            return null;
         return serializer.decode(clz, FileUtil.readBytes(beanPath));
     }
 

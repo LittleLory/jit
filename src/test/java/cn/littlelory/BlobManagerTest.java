@@ -32,7 +32,7 @@ public class BlobManagerTest {
 
     @Test
     public void initLibDir() throws IOException {
-        deleteIfExists(Paths.get(DATADIR + "/.jit"));
+        TestUtil.deleteIfExists(Paths.get(DATADIR + "/.jit"));
 
         blobManager.init();
 
@@ -178,19 +178,5 @@ public class BlobManagerTest {
         List<StatusInfo> actual = blobManager.status();
 
         assertEquals(expect, actual);
-    }
-
-    private void deleteIfExists(Path path) {
-        try {
-            if (!Files.exists(path))
-                return;
-
-            if (Files.isDirectory(path))
-                Files.list(path).forEach(this::deleteIfExists);
-
-            Files.delete(path);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
