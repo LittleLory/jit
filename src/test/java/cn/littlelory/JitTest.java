@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -17,8 +18,9 @@ public class JitTest {
     private Jit jit;
 
     @Before
-    public void init() {
+    public void init() throws IOException {
         this.basePath = TestUtil.resourcesPath() + "data/jit";
+        Files.createDirectory(Paths.get(this.basePath));
 
         TestUtil.deleteIfExists(Paths.get(this.basePath + "/.jit"));
         TestUtil.deleteIfExists(Paths.get(this.basePath + "/NormalJitBean"));

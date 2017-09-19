@@ -2,7 +2,7 @@ package cn.littlelory;
 
 import java.nio.ByteBuffer;
 
-public class FileEntry implements Comparable {
+class FileEntry implements Comparable {
     private String pathname;
     private String fingerprint;
 
