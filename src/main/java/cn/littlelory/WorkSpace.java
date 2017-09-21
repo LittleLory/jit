@@ -40,6 +40,16 @@ class WorkSpace {
         return list().stream().collect(Collectors.toMap(FileEntry::getPathname, (fileEntry -> fileEntry)));
     }
 
+    void flush(List<JitObject> objects) {
+        for (JitObject object : objects) {
+            String pathname = this.basePath + "/" + object.getPathname();
+            String dirPath = pathname.substring(0, pathname.lastIndexOf('/'));
+            byte[] data = object.getData();
+            FileUtil.mkdirs(dirPath);
+            FileUtil.writeBytes(pathname, data);
+        }
+    }
+
     private static final class FileVisitor implements java.nio.file.FileVisitor<Path> {
         private String skipPath;
         private Set<String> list;

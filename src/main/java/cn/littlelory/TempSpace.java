@@ -1,6 +1,5 @@
 package cn.littlelory;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,7 +38,7 @@ class TempSpace {
         assertNotExist(pathname);
         byte[] data = FileUtil.readBytes(baseDirPath + "/" + pathname);
         JitObject object = new JitObject(pathname, data);
-        String fingerprint = BlobUtil.writeObject(objectDirPath, object);
+        String fingerprint = BlobUtil.writeOBlob(objectDirPath, object);
         entries.add(new FileEntry(pathname, fingerprint));
         Collections.sort(entries);
         writeIndex();
@@ -120,10 +119,41 @@ class TempSpace {
         return root.getFingerprint();
     }
 
+    List<JitObject> load() {
+        List<JitObject> objects = new ArrayList<>();
+        for (FileEntry entry : entries)
+            objects.add((JitObject) BlobUtil.loadBlob(objectDirPath, entry.getFingerprint(), JitBlobType.OBJECT));
+        return objects;
+    }
+
+    void loadToIndex(String head) {
+        this.entries = loadObjects(head);
+        writeIndex();
+    }
+
+    private List<FileEntry> loadObjects(String head) {
+        List<FileEntry> objects = new ArrayList<>();
+        loadTree(objects, head);
+        return objects;
+    }
+
+    private void loadTree(List<FileEntry> objects, String fingerprint) {
+        JitTree tree = (JitTree) BlobUtil.loadBlob(objectDirPath, fingerprint, JitBlobType.TREE);
+        for (JitTree.Child child : tree.getChildren()) {
+            JitBlobType type = child.getType();
+            if (type == JitBlobType.OBJECT)
+                objects.add(new FileEntry(child.getPathname(), child.getFingerprint()));
+            else if (type == JitBlobType.TREE)
+                loadTree(objects, child.getFingerprint());
+            else
+                throw new RuntimeException("wrong jit blob type[" + type + "].");
+        }
+    }
+
     private void walkAndWrite(Node root) {
         if (root.getType() == NodeType.FILE) {
             JitBlob blob = new JitObject(root.getName(), FileUtil.readBytes(baseDirPath + "/" + root.getName()));
-            String fingerprint = BlobUtil.writeObject(objectDirPath, blob);
+            String fingerprint = BlobUtil.writeOBlob(objectDirPath, blob);
             root.setBlob(blob);
             root.setFingerprint(fingerprint);
         } else {
@@ -132,7 +162,7 @@ class TempSpace {
             JitTree jitTree = new JitTree(root.getName());
             for (Node child : root.getChildren())
                 jitTree.addChild(child.getBlob().getType(), child.getName(), child.getFingerprint());
-            String fingerprint = BlobUtil.writeObject(objectDirPath, jitTree);
+            String fingerprint = BlobUtil.writeOBlob(objectDirPath, jitTree);
             root.setBlob(jitTree);
             root.setFingerprint(fingerprint);
         }

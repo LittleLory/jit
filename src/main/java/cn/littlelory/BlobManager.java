@@ -1,6 +1,5 @@
 package cn.littlelory;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
@@ -111,6 +110,20 @@ class BlobManager {
         String head = tempSpace.build();
         localSpace.rebuild(head);
         return head;
+    }
+
+    void reset(String fingerprint) {
+        tempSpace.loadToIndex(fingerprint);
+        localSpace.rebuild(fingerprint);
+    }
+
+    void checkout() {
+        List<JitObject> objects = tempSpace.load();
+        workSpace.flush(objects);
+    }
+
+    List<HeadLogInfo> log() {
+        return null;
     }
 
     void setWorkSpace(WorkSpace workSpace) {

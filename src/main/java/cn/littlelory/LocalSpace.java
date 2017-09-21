@@ -1,9 +1,8 @@
 package cn.littlelory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class LocalSpace {
     private final String objectsDirPath;
@@ -27,14 +26,11 @@ class LocalSpace {
     }
 
     private void walk(String fingerprint, JitBlobType type) {
-        String blobPath = objectsDirPath + "/" + fingerprint.substring(0, 2) + "/" + fingerprint.substring(2);
+        JitBlob blob = BlobUtil.loadBlob(objectsDirPath, fingerprint, type);
         if (type == JitBlobType.OBJECT) {
-            JitObject object = new JitObject();
-            object.decode(FileUtil.readBytes(blobPath));
-            blobs.put(fingerprint, object);
+            blobs.put(fingerprint, blob);
         } else if (type == JitBlobType.TREE) {
-            JitTree tree = new JitTree();
-            tree.decode(FileUtil.readBytes(blobPath));
+            JitTree tree = (JitTree) blob;
             tree.getChildren().forEach(child -> walk(child.getFingerprint(), child.getType()));
         } else {
             System.out.println("skip: fingerprint[" + fingerprint + "], type[" + type + "].");
@@ -60,16 +56,28 @@ class LocalSpace {
         return list().stream().collect(Collectors.toMap(FileEntry::getPathname, (fileEntry -> fileEntry)));
     }
 
+    List<HeadLogInfo> headLogInfos() {
+        if (FileUtil.exist(headLogPath)) {
+            String lines = FileUtil.readStr(headLogPath);
+            if (lines.length() > 0)
+                return Stream.of(lines.split("\n")).map(line -> line.split("\t")).map(arr -> new HeadLogInfo(arr[0], arr[1], Long.parseLong(arr[2]))).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+
+
     private String updateHEAD(String fingerprint) {
         String headBefore = FileUtil.exist(headPath) ? FileUtil.readStr(headPath) : "0000000000000000000000000000000000000000";
         FileUtil.writeStr(headPath, fingerprint);
         return headBefore;
     }
+
     private void updateHEADLog(String oldHead, String newHead) {
-        String logInfo = oldHead + "\t" + newHead + "\t" + System.currentTimeMillis();
+        HeadLogInfo logInfo = new HeadLogInfo(oldHead, newHead, System.currentTimeMillis());
         if (FileUtil.exist(headLogPath))
-            FileUtil.appendStr(headLogPath, logInfo);
+            FileUtil.appendStr(headLogPath, logInfo.toString());
         else
-            FileUtil.writeStr(headLogPath, logInfo);
+            FileUtil.writeStr(headLogPath, logInfo.toString());
     }
 }

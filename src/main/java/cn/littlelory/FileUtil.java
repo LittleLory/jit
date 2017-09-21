@@ -67,6 +67,14 @@ class FileUtil {
             mkdir(pathname);
     }
 
+    static void mkdirs(String dirPath) {
+        try {
+            Files.createDirectories(Paths.get(dirPath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static void remove(String pathname) {
         try {
             Files.delete(Paths.get(pathname));

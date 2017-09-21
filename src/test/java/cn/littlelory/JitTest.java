@@ -20,10 +20,12 @@ public class JitTest {
     @Before
     public void init() throws IOException {
         this.basePath = TestUtil.resourcesPath() + "data/jit";
-        Files.createDirectory(Paths.get(this.basePath));
 
         TestUtil.deleteIfExists(Paths.get(this.basePath + "/.jit"));
         TestUtil.deleteIfExists(Paths.get(this.basePath + "/NormalJitBean"));
+        TestUtil.deleteIfExists(Paths.get(this.basePath));
+
+        Files.createDirectory(Paths.get(this.basePath));
 
         this.jit = new Jit(basePath);
     }
@@ -73,5 +75,13 @@ public class JitTest {
         statusInfoList = jit.status();
         assertEquals(1, statusInfoList.size());
         assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.DELETE),statusInfoList.get(0));
+    }
+
+    @Test
+    public void test2() {
+        String path = "abc/def.txt";
+        int index = path.lastIndexOf('/');
+        System.out.println(path.substring(0, index));
+        System.out.println(path.substring(index + 1));
     }
 }
