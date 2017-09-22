@@ -53,10 +53,10 @@ class BlobManager {
     }
 
     //todo rewrite this shit...
-    List<StatusInfo> status() {
+    List<StatusInfo> tempStatus() {
         List<FileEntry> entriesOfWork = workSpace.list();
         List<FileEntry> entriesOfTemp = tempSpace.list();
-        Map<String, FileEntry> entriesOfLocal = localSpace.map();
+//        Map<String, FileEntry> entriesOfLocal = localSpace.map();
 
         List<StatusInfo> result = new ArrayList<>();
 
@@ -86,10 +86,49 @@ class BlobManager {
             } else { //work space have, and temp space have too.
                 if (!entryOfWork.getFingerprint().equals(entryOfTemp.getFingerprint())) { //work space's fingerprint != temp space fingerprint.
                     result.add(new StatusInfo(entryOfWork.getPathname(), StatusInfo.Status.MODIFITED));
-                } else if (!entriesOfLocal.containsKey(entryOfTemp.getPathname()) || !entriesOfLocal.get(entryOfTemp.getPathname()).getFingerprint().equals(entryOfTemp.getFingerprint())) {
-                    result.add(new StatusInfo(entryOfWork.getPathname(), StatusInfo.Status.ADDED));
                 }
                 indexOfWork += 1;
+                indexOfTemp += 1;
+            }
+        }
+
+        return result;
+    }
+    
+    List<StatusInfo> localStatus() {
+        List<FileEntry> entriesOfTemp = tempSpace.list();
+        List<FileEntry> entriesOfLocal = localSpace.list();
+
+        List<StatusInfo> result = new ArrayList<>();
+
+        int indexOfLocal = 0;
+        int indexOfTemp = 0;
+        while (true) {
+            if (indexOfLocal == entriesOfLocal.size()) {
+                IntStream.range(indexOfTemp, entriesOfTemp.size()).
+                        mapToObj(entriesOfTemp::get)
+                        .forEach(entry -> result.add(new StatusInfo(entry.getPathname(), StatusInfo.Status.ADDED)));
+                break;
+            } else if (indexOfTemp == entriesOfTemp.size()) {
+                IntStream.range(indexOfLocal, entriesOfLocal.size()).
+                        mapToObj(entriesOfLocal::get)
+                        .forEach(entry -> result.add(new StatusInfo(entry.getPathname(), StatusInfo.Status.DELETE)));
+                break;
+            }
+
+            FileEntry entryOfLocal = entriesOfLocal.get(indexOfLocal);
+            FileEntry entryOfTemp = entriesOfTemp.get(indexOfTemp);
+            if (entryOfLocal.getPathname().compareTo(entryOfTemp.getPathname()) < 0) { //local space have, but temp space not.
+                result.add(new StatusInfo(entryOfLocal.getPathname(), StatusInfo.Status.ADDED));
+                indexOfLocal += 1;
+            } else if (entryOfLocal.getPathname().compareTo(entryOfTemp.getPathname()) > 0) { //local space don't have, but temp space have.
+                result.add(new StatusInfo(entryOfLocal.getPathname(), StatusInfo.Status.DELETE));
+                indexOfTemp += 1;
+            } else { //local space have, and temp space have too.
+                if (!entryOfLocal.getFingerprint().equals(entryOfTemp.getFingerprint())) { //local space's fingerprint != temp space fingerprint.
+                    result.add(new StatusInfo(entryOfLocal.getPathname(), StatusInfo.Status.MODIFITED));
+                }
+                indexOfLocal += 1;
                 indexOfTemp += 1;
             }
         }
@@ -101,8 +140,13 @@ class BlobManager {
     String add(String pathname) {
         byte[] dataBytes = workSpace.search(pathname);
         if (dataBytes != null) {
-            return tempSpace.add(pathname);
-        }
+            String fingerprint = tempSpace.search(pathname);
+            if (fingerprint == null)
+                tempSpace.add(pathname);
+            else
+                tempSpace.update(pathname);
+        } else
+            tempSpace.remove(pathname);
         return null;
     }
 
@@ -120,6 +164,10 @@ class BlobManager {
     void checkout() {
         List<JitObject> objects = tempSpace.load();
         workSpace.flush(objects);
+    }
+
+    String head() {
+        return localSpace.head();
     }
 
     List<HeadLogInfo> log() {

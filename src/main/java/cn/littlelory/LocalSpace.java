@@ -39,6 +39,7 @@ class LocalSpace {
 
     void rebuild(String head) {
         this.head = head;
+        this.blobs.clear();
         walk(head, JitBlobType.TREE);
         String headBefore = updateHEAD(head);
         updateHEADLog(headBefore, head);
@@ -65,7 +66,9 @@ class LocalSpace {
         return Collections.emptyList();
     }
 
-
+    String head() {
+        return this.head;
+    }
 
     private String updateHEAD(String fingerprint) {
         String headBefore = FileUtil.exist(headPath) ? FileUtil.readStr(headPath) : "0000000000000000000000000000000000000000";
@@ -76,7 +79,7 @@ class LocalSpace {
     private void updateHEADLog(String oldHead, String newHead) {
         HeadLogInfo logInfo = new HeadLogInfo(oldHead, newHead, System.currentTimeMillis());
         if (FileUtil.exist(headLogPath))
-            FileUtil.appendStr(headLogPath, logInfo.toString());
+            FileUtil.appendStr(headLogPath, "\n" + logInfo.toString());
         else
             FileUtil.writeStr(headLogPath, logInfo.toString());
     }

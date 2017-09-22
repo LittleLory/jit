@@ -75,4 +75,20 @@ public class LocalSpaceTest {
         assertTrue(map.containsKey("object1"));
         assertEquals(new FileEntry("object1", "9dff22578761e09c7fcaad5186f563df1b3365fb"), map.get("object1"));
     }
+
+    @Test
+    public void headLog() {
+        List<HeadLogInfo> logs = localSpace.headLogInfos();
+        assertNotNull(logs);
+        assertEquals(3, logs.size());
+
+        assertEquals("0000000000000000000000000000000000000000", logs.get(0).getOldHead());
+        assertEquals("656553b5313eba0a05ee93c89e95599ef40a10a5", logs.get(0).getNewHead());
+
+        assertEquals("656553b5313eba0a05ee93c89e95599ef40a10a5", logs.get(1).getOldHead());
+        assertEquals("315918cc822fc44c1dfdf52d7c1a91b8478b1231", logs.get(1).getNewHead());
+
+        assertEquals("315918cc822fc44c1dfdf52d7c1a91b8478b1231", logs.get(2).getOldHead());
+        assertEquals("656553b5313eba0a05ee93c89e95599ef40a10a5", logs.get(2).getNewHead());
+    }
 }

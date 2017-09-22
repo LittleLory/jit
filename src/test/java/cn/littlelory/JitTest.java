@@ -48,33 +48,93 @@ public class JitTest {
         assertEquals(1, getListResult.size());
         assertEquals(bean, getListResult.get(0));
 
-        List<StatusInfo> statusInfoList = jit.status();
-        assertEquals(1, statusInfoList.size());
-        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.UNTRACKED),statusInfoList.get(0));
+        Jit.Status status = jit.status();
+        List<StatusInfo> unAddStatus = status.getUnAdd();
+        List<StatusInfo> addedStatus = status.getAdded();
+        assertEquals(1, unAddStatus.size());
+        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.UNTRACKED),unAddStatus.get(0));
+        assertEquals(0, addedStatus.size());
 
         jit.add("NormalJitBean/1");
 
-        statusInfoList = jit.status();
-        assertEquals(1, statusInfoList.size());
-        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.ADDED),statusInfoList.get(0));
+        status = jit.status();
+        unAddStatus = status.getUnAdd();
+        addedStatus = status.getAdded();
+        assertEquals(0, unAddStatus.size());
+        assertEquals(1, addedStatus.size());
+        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.ADDED),addedStatus.get(0));
 
         jit.commit();
 
-        statusInfoList = jit.status();
-        assertEquals(0, statusInfoList.size());
+        status = jit.status();
+        unAddStatus = status.getUnAdd();
+        addedStatus = status.getAdded();
+        assertEquals(0, unAddStatus.size());
+        assertEquals(0, addedStatus.size());
 
         bean.setF1(3);
         jit.save(bean);
 
-        statusInfoList = jit.status();
-        assertEquals(1, statusInfoList.size());
-        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.MODIFITED),statusInfoList.get(0));
+        status = jit.status();
+        unAddStatus = status.getUnAdd();
+        addedStatus = status.getAdded();
+        assertEquals(1, unAddStatus.size());
+        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.MODIFITED),unAddStatus.get(0));
+        assertEquals(0, addedStatus.size());
 
         jit.delete(NormalJitBean.class, "1");
 
-        statusInfoList = jit.status();
-        assertEquals(1, statusInfoList.size());
-        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.DELETE),statusInfoList.get(0));
+        status = jit.status();
+        unAddStatus = status.getUnAdd();
+        addedStatus = status.getAdded();
+        assertEquals(1, unAddStatus.size());
+        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.DELETE),unAddStatus.get(0));
+        assertEquals(0, addedStatus.size());
+
+        jit.add("NormalJitBean/1");
+
+        status = jit.status();
+        unAddStatus = status.getUnAdd();
+        addedStatus = status.getAdded();
+        assertEquals(0, unAddStatus.size());
+        assertEquals(1, addedStatus.size());
+        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.DELETE),addedStatus.get(0));
+
+        String oldHead = jit.head();
+
+        jit.commit();
+
+        status = jit.status();
+        unAddStatus = status.getUnAdd();
+        addedStatus = status.getAdded();
+        assertEquals(0, unAddStatus.size());
+        assertEquals(0, addedStatus.size());
+
+        jit.reset(oldHead);
+
+        status = jit.status();
+        unAddStatus = status.getUnAdd();
+        addedStatus = status.getAdded();
+        assertEquals(1, unAddStatus.size());
+        assertEquals(new StatusInfo("NormalJitBean/1", StatusInfo.Status.DELETE),unAddStatus.get(0));
+        assertEquals(0, addedStatus.size());
+
+        jit.checkout();
+        status = jit.status();
+        unAddStatus = status.getUnAdd();
+        addedStatus = status.getAdded();
+        assertEquals(0, unAddStatus.size());
+        assertEquals(0, addedStatus.size());
+        assertTrue(Files.exists(Paths.get(basePath + "/NormalJitBean/1")));
+
+        NormalJitBean actual = BeanSerializer.getInstance().decode(NormalJitBean.class, Files.readAllBytes(Paths.get(basePath + "/NormalJitBean/1")));
+
+        NormalJitBean expect = new NormalJitBean();
+        expect.setKey("1");
+        expect.setF1(2);
+        expect.setF2(3L);
+        assertEquals(expect, actual);
+
     }
 
     @Test

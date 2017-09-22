@@ -31,9 +31,6 @@ public class StatusInfo {
 
     @Override
     public String toString() {
-        return "StatusInfo{" +
-                "path='" + path + '\'' +
-                ", status=" + status +
-                '}';
+        return this.status + ":\t" + this.path;
     }
 }

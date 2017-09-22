@@ -5,7 +5,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkSpaceTest {
@@ -30,5 +35,25 @@ public class WorkSpaceTest {
     @Test
     public void search() {
         TestUtil.assertBytesEquals(new byte[]{0x61, 0x62, 0x63}, workSpace.search("a.txt"));
+    }
+
+    @Test
+    public void flush() throws IOException {
+        String basePath = TestUtil.resourcesPath() + "data/flush";
+        workSpace = new WorkSpace(basePath);
+
+        List<JitObject> objects = new ArrayList<>();
+        objects.add(new JitObject("a.txt", "a".getBytes()));
+        objects.add(new JitObject("b.txt", "b".getBytes()));
+        objects.add(new JitObject("dir/b.txt", "b".getBytes()));
+
+        workSpace.flush(objects);
+
+        assertTrue(Files.exists(Paths.get(basePath + "/a.txt")));
+        TestUtil.assertBytesEquals("a".getBytes(), Files.readAllBytes(Paths.get(basePath + "/a.txt")));
+        assertTrue(Files.exists(Paths.get(basePath + "/b.txt")));
+        TestUtil.assertBytesEquals("b".getBytes(), Files.readAllBytes(Paths.get(basePath + "/b.txt")));
+        assertTrue(Files.exists(Paths.get(basePath + "/dir/b.txt")));
+        TestUtil.assertBytesEquals("b".getBytes(), Files.readAllBytes(Paths.get(basePath + "/dir/b.txt")));
     }
 }

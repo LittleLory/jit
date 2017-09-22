@@ -37,8 +37,8 @@ public class Jit {
         return beanManager.getList(clz);
     }
 
-    public List<StatusInfo> status() {
-        return blobManager.status();
+    public Status status() {
+        return new Status(blobManager.tempStatus(), blobManager.localStatus());
     }
 
     public String add(String pathname) {
@@ -47,5 +47,47 @@ public class Jit {
 
     public String commit() {
         return blobManager.commit();
+    }
+
+    public void reset(String head) {
+        blobManager.reset(head);
+    }
+
+    public void checkout() {
+        blobManager.checkout();
+    }
+
+    public String head() {
+        return blobManager.head();
+    }
+
+    public static final class Status {
+        private final List<StatusInfo> added;
+        private final List<StatusInfo> unAdd;
+
+        public Status(List<StatusInfo> unAdd,List<StatusInfo> added) {
+            this.added = added;
+            this.unAdd = unAdd;
+        }
+
+        public List<StatusInfo> getAdded() {
+            return added;
+        }
+
+        public List<StatusInfo> getUnAdd() {
+            return unAdd;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append("status not add:").append("\n");
+            if (unAdd != null)
+                unAdd.forEach(statusInfo -> builder.append(statusInfo.toString()).append("\n"));
+            builder.append("status added:").append("\n");
+            if (added != null)
+                added.forEach(statusInfo -> builder.append(statusInfo.toString()).append("\n"));
+            return builder.toString();
+        }
     }
 }

@@ -91,7 +91,7 @@ public class TempIndexTest {
 
     @Test
     public void update_an_entry() throws IOException {
-        tempSpace.update("a.txt", "81c545efebe5f57d4cab2ba9ec294c4b0cadf672");
+        tempSpace.update("a.txt");
         byte[] actual = readBytesFromIndex();
         byte[] expect = new byte[]{
                 0x0,0x0,0x0,0x2,//length = 2
@@ -118,7 +118,7 @@ public class TempIndexTest {
 
     @Test(expected = NoSuchIndexException.class)
     public void update_a_not_exist_entry() {
-        tempSpace.update("c.txt", "81c545efebe5f57d4cab2ba9ec294c4b0cadf672");
+        tempSpace.update("c.txt");
     }
 
     @Test

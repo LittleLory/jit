@@ -36,4 +36,17 @@ class TestUtil {
             throw new RuntimeException(e);
         }
     }
+
+    static void deleteChildrenIfExists(Path path) {
+        try {
+            if (!Files.exists(path))
+                return;
+
+            if (Files.isDirectory(path))
+                Files.list(path).forEach(TestUtil::deleteIfExists);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

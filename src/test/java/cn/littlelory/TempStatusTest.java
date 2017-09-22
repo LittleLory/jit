@@ -1,13 +1,11 @@
 package cn.littlelory;
 
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,26 +18,14 @@ import static org.easymock.EasyMock.*;
 /**
  * Created by littlelory on 29/08/2017.
  */
-public class BlobManagerTest {
+public class TempStatusTest {
     private BlobManager blobManager;
-    private static final String DATADIR = TestUtil.resourcesPath() + "/data/manager/dir1";
-    private static final String DATADIR2 = TestUtil.resourcesPath() + "/data/manager/dir2";
 
     @Before
     public void init() throws FileNotFoundException {
-        blobManager = new BlobManager(DATADIR);
+        blobManager = new BlobManager("");
     }
 
-    @Test
-    public void initLibDir() throws IOException {
-        TestUtil.deleteIfExists(Paths.get(DATADIR + "/.jit"));
-
-        blobManager.init();
-
-        assertTrue(Files.exists(Paths.get(DATADIR + "/.jit")));
-        assertTrue(Files.exists(Paths.get(DATADIR + "/.jit/logs")));
-        assertTrue(Files.exists(Paths.get(DATADIR + "/.jit/objects")));
-    }
 
     @Test
     public void status_untracked() {
@@ -54,17 +40,12 @@ public class BlobManagerTest {
         expect(tempSpace.list()).andReturn(tempList);
         blobManager.setTempSpace(tempSpace);
 
-        LocalSpace localSpace = createMock(LocalSpace.class);
-        Map<String, FileEntry> localMap = new HashMap<>();
-        expect(localSpace.map()).andReturn(localMap);
-        blobManager.setLocalSpace(localSpace);
-
-        replay(workSpace, tempSpace, localSpace);
+        replay(workSpace, tempSpace);
 
         List<StatusInfo> expect = new ArrayList<>();
         expect.add(new StatusInfo("a.txt", StatusInfo.Status.UNTRACKED));
 
-        List<StatusInfo> actual = blobManager.status();
+        List<StatusInfo> actual = blobManager.tempStatus();
 
         assertEquals(expect, actual);
     }
@@ -83,17 +64,12 @@ public class BlobManagerTest {
         expect(tempSpace.list()).andReturn(tempList);
         blobManager.setTempSpace(tempSpace);
 
-        LocalSpace localSpace = createMock(LocalSpace.class);
-        Map<String, FileEntry> localMap = new HashMap<>();
-        expect(localSpace.map()).andReturn(localMap);
-        blobManager.setLocalSpace(localSpace);
-
-        replay(workSpace, tempSpace, localSpace);
+        replay(workSpace, tempSpace);
 
         List<StatusInfo> expect = new ArrayList<>();
         expect.add(new StatusInfo("a.txt", StatusInfo.Status.MODIFITED));
 
-        List<StatusInfo> actual = blobManager.status();
+        List<StatusInfo> actual = blobManager.tempStatus();
 
         assertEquals(expect, actual);
     }
@@ -112,17 +88,11 @@ public class BlobManagerTest {
         expect(tempSpace.list()).andReturn(tempList);
         blobManager.setTempSpace(tempSpace);
 
-        LocalSpace localSpace = createMock(LocalSpace.class);
-        Map<String, FileEntry> localMap = new HashMap<>();
-        expect(localSpace.map()).andReturn(localMap);
-        blobManager.setLocalSpace(localSpace);
-
-        replay(workSpace, tempSpace, localSpace);
+        replay(workSpace, tempSpace);
 
         List<StatusInfo> expect = new ArrayList<>();
-        expect.add(new StatusInfo("a.txt", StatusInfo.Status.ADDED));
 
-        List<StatusInfo> actual = blobManager.status();
+        List<StatusInfo> actual = blobManager.tempStatus();
 
         assertEquals(expect, actual);
     }
@@ -140,17 +110,12 @@ public class BlobManagerTest {
         expect(tempSpace.list()).andReturn(tempList);
         blobManager.setTempSpace(tempSpace);
 
-        LocalSpace localSpace = createMock(LocalSpace.class);
-        Map<String, FileEntry> localMap = new HashMap<>();
-        expect(localSpace.map()).andReturn(localMap);
-        blobManager.setLocalSpace(localSpace);
-
-        replay(workSpace, tempSpace, localSpace);
+        replay(workSpace, tempSpace);
 
         List<StatusInfo> expect = new ArrayList<>();
         expect.add(new StatusInfo("a.txt", StatusInfo.Status.DELETE));
 
-        List<StatusInfo> actual = blobManager.status();
+        List<StatusInfo> actual = blobManager.tempStatus();
 
         assertEquals(expect, actual);
     }
@@ -167,15 +132,10 @@ public class BlobManagerTest {
         expect(tempSpace.list()).andReturn(tempList);
         blobManager.setTempSpace(tempSpace);
 
-        LocalSpace localSpace = createMock(LocalSpace.class);
-        Map<String, FileEntry> localMap = new HashMap<>();
-        expect(localSpace.map()).andReturn(localMap);
-        blobManager.setLocalSpace(localSpace);
-
-        replay(workSpace, tempSpace, localSpace);
+        replay(workSpace, tempSpace);
 
         List<StatusInfo> expect = new ArrayList<>();
-        List<StatusInfo> actual = blobManager.status();
+        List<StatusInfo> actual = blobManager.tempStatus();
 
         assertEquals(expect, actual);
     }

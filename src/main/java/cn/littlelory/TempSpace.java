@@ -45,12 +45,16 @@ class TempSpace {
         return fingerprint;
     }
 
-    void update(String pathname, String fingerprint) {
+    void update(String pathname) {
         assertExist(pathname);
         Optional<FileEntry> optional = entries.stream().filter(entry -> entry.getPathname().equals(pathname)).findFirst();
         FileEntry target = optional.orElseThrow(() -> new NoSuchIndexException("no such index of path[" + pathname + "]."));
+        byte[] data = FileUtil.readBytes(baseDirPath + "/" + pathname);
+        JitObject object = new JitObject(pathname, data);
+        String fingerprint = BlobUtil.writeOBlob(objectDirPath, object);
         entries.remove(target);
         entries.add(new FileEntry(pathname, fingerprint));
+        Collections.sort(entries);
         writeIndex();
     }
 
