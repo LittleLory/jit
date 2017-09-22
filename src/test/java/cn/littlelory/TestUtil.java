@@ -15,7 +15,7 @@ class TestUtil {
             try {
                 assertEquals(expect[i], actual[i]);
             } catch (AssertionError e) {
-                throw new AssertionError(e.getMessage() + "\nindex\t:" + i + "\n", e);
+                throw new AssertionError(e.getMessage() + "\nindex\t:" + i + "\nexpect=["+printHexBinary(expect)+"]\nactual=["+printHexBinary(actual)+"]", e);
             }
     }
 
@@ -48,5 +48,18 @@ class TestUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
+
+    static String printHexBinary(byte[] data) {
+        StringBuilder r = new StringBuilder(data.length * 2);
+        for (byte b : data) {
+            r.append("0x");
+            r.append(hexCode[(b >> 4) & 0xF]);
+            r.append(hexCode[(b & 0xF)]);
+            r.append(", ");
+        }
+        return r.toString();
     }
 }
