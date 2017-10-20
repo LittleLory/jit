@@ -15,6 +15,14 @@ public class StatusInfo {
         UNTRACKED, MODIFITED, ADDED, DELETE;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

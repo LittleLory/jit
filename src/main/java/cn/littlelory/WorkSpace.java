@@ -71,7 +71,7 @@ class WorkSpace {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
             String pathname = file.toUri().getPath();
-            System.out.println("visit:" + pathname);
+//            System.out.println("visit:" + pathname);
             if (!pathname.startsWith(skipPath))
                 list.add(pathname);
             else
