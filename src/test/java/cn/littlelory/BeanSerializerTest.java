@@ -170,6 +170,6 @@ public class BeanSerializerTest {
         assertNotNull(bean);
         assertEquals("abc", bean.getKey());
         assertEquals(1024, bean.getF1());
-        assertEquals(2048, bean.getF2());
+        assertEquals(2048L, bean.getF2());
     }
 }

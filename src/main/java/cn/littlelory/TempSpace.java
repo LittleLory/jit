@@ -82,20 +82,20 @@ class TempSpace {
         entries = new ArrayList<>();
         if (bytes != null && bytes.length > 0) {
             ByteBuffer buffer = ByteBuffer.wrap(bytes);
-            int length = buffer.getInt();
-            IntStream.range(0, length).forEach(i -> {
+            while (buffer.remaining() > 0) {
                 FileEntry entry = FileEntry.decode(ByteBufferUtil.getBuffer(buffer));
-                entries.add(i, entry);
-            });
+                entries.add(entry);
+            }
         }
     }
 
     private void writeIndex() {
-        ByteBuffer buffer = ByteBuffer.allocate(2048);
-        buffer.putInt(entries.size());
-        entries.stream().sorted().forEach(entry -> ByteBufferUtil.fillBuffer(buffer, entry.encode()));
-        byte[] result = ByteBufferUtil.getAll(buffer);
-        FileUtil.writeBytes(indexPathname, result);
+        FileUtil.writeBytes(indexPathname, new byte[]{});
+        entries.stream().sorted().forEach(entry -> {
+            ByteBuffer buffer = ByteBuffer.allocate(2048);
+            ByteBufferUtil.fillBuffer(buffer, entry.encode());
+            FileUtil.appendBytes(indexPathname, ByteBufferUtil.getAll(buffer));
+        });
     }
 
     String build() {
@@ -136,7 +136,7 @@ class TempSpace {
     }
 
     private List<FileEntry> loadObjects(String head) {
-        List<FileEntry> objects = new ArrayList<>();
+        List<FileEntry> objects = new LinkedList<>();
         loadTree(objects, head);
         return objects;
     }

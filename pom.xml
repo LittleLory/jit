@@ -19,7 +19,7 @@
     </developers>
 
     <properties>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.0</junit.version>
     </properties>
 
     <dependencies>
