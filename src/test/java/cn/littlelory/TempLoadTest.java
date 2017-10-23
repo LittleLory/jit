@@ -45,8 +45,8 @@ public class TempLoadTest {
         Files.write(Paths.get(baseDirPath + "/" + path1), bytes1);
         Files.write(Paths.get(baseDirPath + "/" + path2), bytes2);
 
-        BlobUtil.writeOBlob(objectDirPath, jitObject1);
-        BlobUtil.writeOBlob(objectDirPath, jitObject2);
+//        BlobUtil.writeOBlob(objectDirPath, jitObject1);
+//        BlobUtil.writeOBlob(objectDirPath, jitObject2);
 
         tempSpace.add(path1);
         tempSpace.add(path2);

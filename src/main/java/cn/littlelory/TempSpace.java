@@ -115,7 +115,7 @@ class TempSpace {
                 current = dir;
             }
             pathname.append(paths.get(paths.size() - 1));
-            Node file = new Node(pathname.toString(), NodeType.FILE);
+            Node file = new Node(pathname.toString(), NodeType.FILE, fileEntry.getFingerprint());
             current.addChild(file);
         }
 
@@ -157,7 +157,11 @@ class TempSpace {
     private void walkAndWrite(Node root) {
         if (root.getType() == NodeType.FILE) {
             JitBlob blob = new JitObject(root.getName(), FileUtil.readBytes(baseDirPath + "/" + root.getName()));
-            String fingerprint = BlobUtil.writeOBlob(objectDirPath, blob);
+            String fingerprint;
+            if (BlobUtil.isBlobExist(objectDirPath, root.getFingerprint()))
+                fingerprint = root.getFingerprint();
+            else
+                fingerprint = BlobUtil.writeOBlob(objectDirPath, blob);
             root.setBlob(blob);
             root.setFingerprint(fingerprint);
         } else {
@@ -183,6 +187,12 @@ class TempSpace {
             this.name = name;
             this.type = type;
             this.children = new ArrayList<>();
+        }
+
+        public Node(String name, NodeType type, String fingerprint) {
+            this.name = name;
+            this.fingerprint = fingerprint;
+            this.type = type;
         }
 
         void addChild(Node node) {

@@ -44,6 +44,8 @@ public class TempIndexTest {
 
         Files.write(Paths.get(indexPath), bytes);
 
+        TestUtil.deleteChildrenIfExists(Paths.get(TestUtil.resourcesPath() + "data/index/.jit/objects"));
+
         tempSpace = new TempSpace(baseDirPath, objectDirPath, indexPath);
     }
 

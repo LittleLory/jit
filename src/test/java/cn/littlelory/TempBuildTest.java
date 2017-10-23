@@ -44,6 +44,8 @@ public class TempBuildTest {
 
         Files.write(Paths.get(indexPath), bytes);
 
+        TestUtil.deleteChildrenIfExists(Paths.get(TestUtil.resourcesPath() + "data/temp/.jit/objects"));
+
         tempSpace = new TempSpace(baseDirPath, objectDirPath, indexPath);
     }
 
@@ -51,14 +53,14 @@ public class TempBuildTest {
     public void build() throws IOException {
         tempSpace.build();
 
-        JitObject jitObject1 = new JitObject("a.txt", Files.readAllBytes(Paths.get("/Users/king/Work/code/jit/src/test/resources/data/temp/a.txt")));
+        JitObject jitObject1 = new JitObject("a.txt", Files.readAllBytes(Paths.get(TestUtil.resourcesPath() + "data/temp/a.txt")));
         String fingerprint1 = Fingerprint.generate(jitObject1.encode());
         assertTrue(Files.exists(Paths.get(objectDirPath + "/" + fingerprint1.substring(0, 2))));
         assertTrue(Files.isDirectory(Paths.get(objectDirPath + "/" + fingerprint1.substring(0, 2))));
         assertTrue(Files.exists(Paths.get(objectDirPath + "/" + fingerprint1.substring(0, 2) + "/" + fingerprint1.substring(2))));
         assertFalse(Files.isDirectory(Paths.get(objectDirPath + "/" + fingerprint1.substring(0, 2) + "/" + fingerprint1.substring(2))));
 
-        JitObject jitObject2 = new JitObject("dir/a.txt", Files.readAllBytes(Paths.get("/Users/king/Work/code/jit/src/test/resources/data/temp/dir/a.txt")));
+        JitObject jitObject2 = new JitObject("dir/a.txt", Files.readAllBytes(Paths.get(TestUtil.resourcesPath() + "data/temp/dir/a.txt")));
         String fingerprint2 = Fingerprint.generate(jitObject2.encode());
         assertTrue(Files.exists(Paths.get(objectDirPath + "/" + fingerprint2.substring(0,2))));
         assertTrue(Files.isDirectory(Paths.get(objectDirPath + "/" + fingerprint2.substring(0,2))));
@@ -86,7 +88,7 @@ public class TempBuildTest {
     @Test
     public void test() throws IOException {
         System.out.println();
-        System.out.println(Fingerprint.generate(new JitObject("dir/a.txt", Files.readAllBytes(Paths.get("/Users/king/Work/code/jit/src/test/resources/data/temp/dir/a.txt"))).encode()));
+        System.out.println(Fingerprint.generate(new JitObject("dir/a.txt", Files.readAllBytes(Paths.get(TestUtil.resourcesPath() + "data/temp/dir/a.txt"))).encode()));
     }
 
 }
