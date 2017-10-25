@@ -3,7 +3,6 @@ package cn.littlelory;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by littlelory on 31/08/2017.
@@ -38,7 +37,7 @@ class TempSpace {
         assertNotExist(pathname);
         byte[] data = FileUtil.readBytes(baseDirPath + "/" + pathname);
         JitObject object = new JitObject(pathname, data);
-        String fingerprint = BlobUtil.writeOBlob(objectDirPath, object);
+        String fingerprint = BlobUtil.writeBlob(objectDirPath, object);
         entries.add(new FileEntry(pathname, fingerprint));
         Collections.sort(entries);
         writeIndex();
@@ -51,7 +50,7 @@ class TempSpace {
         FileEntry target = optional.orElseThrow(() -> new NoSuchIndexException("no such index of path[" + pathname + "]."));
         byte[] data = FileUtil.readBytes(baseDirPath + "/" + pathname);
         JitObject object = new JitObject(pathname, data);
-        String fingerprint = BlobUtil.writeOBlob(objectDirPath, object);
+        String fingerprint = BlobUtil.writeBlob(objectDirPath, object);
         entries.remove(target);
         entries.add(new FileEntry(pathname, fingerprint));
         Collections.sort(entries);
@@ -161,7 +160,7 @@ class TempSpace {
             if (BlobUtil.isBlobExist(objectDirPath, root.getFingerprint()))
                 fingerprint = root.getFingerprint();
             else
-                fingerprint = BlobUtil.writeOBlob(objectDirPath, blob);
+                fingerprint = BlobUtil.writeBlob(objectDirPath, blob);
             root.setBlob(blob);
             root.setFingerprint(fingerprint);
         } else {
@@ -170,7 +169,7 @@ class TempSpace {
             JitTree jitTree = new JitTree(root.getName());
             for (Node child : root.getChildren())
                 jitTree.addChild(child.getBlob().getType(), child.getName(), child.getFingerprint());
-            String fingerprint = BlobUtil.writeOBlob(objectDirPath, jitTree);
+            String fingerprint = BlobUtil.writeBlob(objectDirPath, jitTree);
             root.setBlob(jitTree);
             root.setFingerprint(fingerprint);
         }

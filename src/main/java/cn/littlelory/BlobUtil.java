@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 public class BlobUtil {
     private static final Logger logger = Logger.getLogger("BlobUtil");
 
-    public static String writeOBlob(String objectsDirPath, JitBlob object) {
+    public static String writeBlob(String objectsDirPath, JitBlob object) {
         byte[] bytes = object.encode();
         String fingerprint = Fingerprint.generate(bytes);
         String firstDir = objectsDirPath + "/" + fingerprint.substring(0, 2);
